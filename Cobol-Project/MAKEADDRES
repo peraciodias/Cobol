@@ -1,0 +1,98 @@
+       IDENTIFICATION DIVISION.
+      *PERACIO.DIAS@GMAIL.COM.
+       PROGRAM-ID. MKADDRES.
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SPECIAL-NAMES.
+           DECIMAL-POINT IS COMMA.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+              SELECT PRINT-OUT ASSIGN TO PRTLINE.
+              SELECT FILE-IN ASSIGN   TO RECIN
+              ORGANIZATION IS SEQUENTIAL.
+              SELECT FILE-OUT ASSIGN  TO RECOUT
+              ORGANIZATION IS  SEQUENTIAL.
+
+       DATA DIVISION.
+       FILE SECTION.
+       FD  FILE-IN RECORD CONTAINS 170 CHARACTERS RECORDING MODE F.
+       01  RECORD-IN.
+           05 CODE-IN               PIC 9(08).
+           05 NAME-IN               PIC X(20).
+           05 LNAME-IN              PIC X(30).
+           05 DDD-IN                PIC 9(03).
+           05 PHONE-IN              PIC 9(10).
+           05 FILLER                PIC X(99) VALUE SPACES.
+       FD  PRINT-OUT RECORD CONTAINS 170 CHARACTERS RECORDING MODE F.
+       01  RECORD-PRINT.
+           05 CODE-PRINT            PIC 9(08).
+           05 NAME-PRINT            PIC X(20).
+           05 LNAME-PRINT           PIC X(30).
+           05 DDD-PRINT             PIC 9(03).
+           05 PHONE-PRINT           PIC 9(10).
+           05 ZIPCODE-PRINT         PIC 9(08).
+           05 CITY-PRINT            PIC X(08).
+           05 STATE-PRINT           PIC X(02).
+           05 DISTRICT-PRINT        PIC X(32).
+           05 STREET-PRINT          PIC X(30).
+           05 FILLER                PIC X(19) VALUE SPACES.
+
+       FD  FILE-OUT RECORD CONTAINS 170 CHARACTERS RECORDING MODE F.
+       01  RECORD-OUT.
+           05 CODE-OUT              PIC 9(08).
+           05 NAME-OUT              PIC X(20).
+           05 LNAME-OUT             PIC X(30).
+           05 DDD-OUT               PIC 9(03).
+           05 PHONE-OUT             PIC 9(10).
+           05 ZIPCODE-OUT           PIC 9(08).
+           05 CITY-OUT              PIC X(08).
+           05 STATE-OUT             PIC X(02).
+           05 DISTRICT-OUT          PIC X(32).
+           05 STREET-OUT            PIC X(30).
+           05 FILLER                PIC X(19) VALUE SPACES.
+
+       WORKING-STORAGE SECTION.
+       01 LINE-REC-IN               PIC X(80).
+       01  WS-RECORD.
+           05 WS-ZIPCODE            PIC 9(08).
+           05 WS-CITY               PIC X(08).
+           05 WS-STATE              PIC X(02).
+           05 WS-DISTRICT           PIC X(32).
+           05 WS-STREET             PIC X(30).
+
+      *
+       01 FLAGS.
+         05 LASTREC           PIC X VALUE SPACE.
+
+       PROCEDURE DIVISION.
+           OPEN INPUT   FILE-IN.
+           OPEN OUTPUT  PRINT-OUT.
+           OPEN OUTPUT  FILE-OUT.
+
+      *     PERFORM  UNTIL LASTREC = 'Y'
+           PERFORM 155 TIMES
+           PERFORM READ-RECORD-IN
+              ACCEPT LINE-REC-IN
+              MOVE LINE-REC-IN TO WS-RECORD
+
+              MOVE WS-ZIPCODE TO ZIPCODE-OUT
+              MOVE WS-CITY TO CITY-OUT
+              MOVE WS-STATE  TO STATE-OUT
+              MOVE WS-DISTRICT TO DISTRICT-OUT
+              MOVE WS-STREET TO STREET-OUT
+
+              MOVE RECORD-OUT TO RECORD-PRINT
+
+              WRITE RECORD-PRINT
+              WRITE RECORD-OUT
+           END-PERFORM.
+
+           CLOSE FILE-IN.
+           CLOSE PRINT-OUT.
+           CLOSE FILE-OUT.
+           STOP RUN.
+      *
+       READ-RECORD-IN.
+           READ FILE-IN INTO RECORD-OUT
+           AT END MOVE 'Y' TO LASTREC
+           END-READ.

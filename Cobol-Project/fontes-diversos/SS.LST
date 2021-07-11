@@ -1,0 +1,311 @@
+* Microsoft COBOL Version 5.0        L2.4 revision 003 15-May-19 23:56 Page   1
+*                                          SS.COB
+* Options: LIST(SS.LST) ASMLIST(SS.GRP)
+     1 IDENTIFICATION DIVISION.
+     2 PROGRAM-ID. CLIENTES.
+     3 ENVIRONMENT DIVISION.
+     4 INPUT-OUTPUT SECTION.
+     5 FILE-CONTROL.
+     6     SELECT FILE1 ASSIGN TO DISK
+     7         ORGANIZATION IS INDEXED
+     8         ACCESS MODE IS RANDOM
+     9         FILE STATUS IS FS-STAT
+    10         RECORD KEY IS FS-KEY.
+    11 DATA DIVISION.
+    12 FILE SECTION.
+    13 FD FILE1 VALUE OF FILE-ID IS "clientes.dat".
+    14 01 FILE1-REC.
+    15     05 FS-KEY.
+    16         10 FS-FONE PIC 9(09) BLANK WHEN ZEROS.
+    17     05 FS-NOME     PIC X(40).
+    18     05 FS-ENDERECO PIC X(40).
+    19     05 FILLER      PIC X(20).
+    20 WORKING-STORAGE SECTION.
+    21 01 WS-MODULO.
+    22     05 FILLER PIC X(11) VALUE "CLIENTES -".
+    23     05 WS-OP PIC X(20) VALUE SPACES.
+    24
+    25 77 WS-OPCAO PIC X.
+    26     88 E-INCLUIR   VALUE IS "1".
+    27     88 E-CONSULTAR VALUE IS "2".
+    28     88 E-ALTERAR   VALUE IS "3".
+    29     88 E-EXCLUIR   VALUE IS "4".
+    30     88 E-ENCERRAR  VALUE IS "X" "x".
+    31 77 FS-STAT PIC 9(02).
+    32     88 FS-OK         VALUE ZEROS.
+    33     88 FS-CANCELA    VALUE 99.
+    34     88 FS-NAO-EXISTE VALUE 35.
+    35 77 WS-ERRO PIC X.
+    36     88 E-SIM VALUES ARE "S" "s".
+    37
+    38 77 WS-NUML PIC 999.
+    39 77 WS-NUMC PIC 999.
+    40 77 COR-FUNDO PIC 9 VALUE 1.
+    41 77 COR-FRENTE PIC 9 VALUE 6.
+    42
+    43 77 WS-STATUS PIC X(30).
+    44 77 WS-MSGERRO PIC X(80).
+    45
+    46* COPY screenio.
+    47
+    48 SCREEN SECTION.
+    49 01 SS-CLS.
+    50     05 SS-FILLER.
+    51         10 BLANK SCREEN.
+    52         10 LINE 01 COLUMN 01 ERASE EOL
+    53            BACKGROUND-COLOR COR-FUNDO.
+    54         10 LINE WS-NUML COLUMN 01 ERASE EOL
+    55            BACKGROUND-COLOR COR-FUNDO.
+    56     05 SS-CABECALHO.
+    57         10 LINE 01 COLUMN 02 PIC X(31) FROM WS-MODULO
+* Microsoft COBOL Version 5.0        L2.4 revision 003 15-May-19 23:56 Page   2
+*                                          SS.COB
+    58            HIGHLIGHT FOREGROUND-COLOR COR-FRENTE
+    59            BACKGROUND-COLOR COR-FUNDO.
+    60     05 SS-STATUS.
+    61         10 LINE WS-NUML COLUMN 2 ERASE EOL PIC X(30)
+    62            FROM WS-STATUS HIGHLIGHT
+    63            FOREGROUND-COLOR COR-FRENTE
+    64            BACKGROUND-COLOR COR-FUNDO.
+    65 01 SS-MENU FOREGROUND-COLOR 6.
+    66     05 LINE 07 COLUMN 15 VALUE "1 - INCLUIR".
+    67     05 LINE 08 COLUMN 15 VALUE "2 - CONSULTAR".
+    68     05 LINE 09 COLUMN 15 VALUE "3 - ALTERAR".
+    69     05 LINE 10 COLUMN 15 VALUE "4 - EXCLUIR".
+    70     05 LINE 11 COLUMN 15 VALUE "X - ENCERRAR".
+    71     05 LINE 13 COLUMN 15 VALUE "OPÇÃO: ".
+    72     05 LINE 13 COL PLUS 1 USING WS-OPCAO AUTO.
+    73
+* 229-S                                                                (   0)**
+**    Incompatible qualifiers
+    74 01 SS-TELA-REGISTRO.
+    75     05 SS-CHAVE FOREGROUND-COLOR 2.
+    76         10 LINE 10 COLUMN 10 VALUE "TELEFONE:".
+    77         10 COLUMN PLUS 2 PIC 9(09) USING FS-FONE
+    78            BLANK WHEN ZEROS.
+    79     05 SS-DADOS.
+    80         10 LINE 11 COLUMN 10 VALUE "    NOME:".
+    81         10 COLUMN PLUS 2 PIC X(40) USING FS-NOME.
+    82         10 LINE 12 COLUMN 10 VALUE "ENDEREÇO:".
+    83         10 COLUMN PLUS 2 PIC X(40) USING FS-ENDERECO.
+    84
+    85 01 SS-ERRO.
+    86     05 FILLER FOREGROUND-COLOR 4 BACKGROUND-COLOR 1 HIGHLIGHT.
+    87         10 LINE WS-NUML COLUMN 2 PIC X(80) FROM WS-MSGERRO BELL.
+    88         10 COLUMN PLUS 2 TO WS-ERRO.
+* 229-S************************************                            (   2)**
+**    Incompatible qualifiers
+    89 PROCEDURE DIVISION.
+    90 INICIO.
+    91     SET ENVIRONMENT 'COB_SCREEN_EXCEPTIONS' TO 'Y'.
+*  14-S*******************                                             (   2)**
+**    Invalid operand
+    92     SET ENVIRONMENT 'COB_SCREEN_ESC' TO 'Y'.
+*  14-S*******************                                             (   2)**
+**    Invalid operand
+    93     SET ENVIRONMENT 'ESCDELAY' TO '25'.
+*  14-S*******************                                             (   2)**
+**    Invalid operand
+    94     ACCEPT WS-NUML FROM LINES
+* 310-S*****************************                                   (   2)**
+**    ACCEPT/DISPLAY syntax incorrect
+    95     ACCEPT WS-NUMC FROM COLUMNS
+* 310-S*******************************                                 (   2)**
+**    ACCEPT/DISPLAY syntax incorrect
+    96     PERFORM ABRIR-ARQUIVOS
+    97     PERFORM UNTIL E-ENCERRAR
+    98         MOVE "MENU" TO WS-OP
+    99         MOVE "ESCOLHA A OPÇÃO" TO WS-STATUS
+   100         MOVE SPACES TO WS-OPCAO
+   101         DISPLAY SS-CLS
+* Microsoft COBOL Version 5.0        L2.4 revision 003 15-May-19 23:56 Page   3
+*                                          SS.COB
+   102         ACCEPT SS-MENU
+   103         EVALUATE TRUE
+* 357-S****************                                                (   2)**
+**    Screen is display-only
+   104             WHEN E-INCLUIR
+   105                 PERFORM INCLUI THRU INCLUI-FIM
+   106             WHEN E-CONSULTAR
+   107                 PERFORM CONSULTA THRU CONSULTA-FIM
+   108             WHEN E-ALTERAR
+   109                 PERFORM ALTERA THRU ALTERA-FIM
+   110             WHEN E-EXCLUIR
+   111                 PERFORM EXCLUI THRU EXCLUI-FIM
+   112         END-EVALUATE
+   113     END-PERFORM.
+   114 FINALIZA.
+   115     CLOSE FILE1.
+   116     STOP RUN.
+   117
+   118* -----------------------------------
+   119 INCLUI.
+   120     MOVE "INCLUSÃO" TO WS-OP.
+   121     MOVE "ESC PARA ENCERRAR" TO WS-STATUS.
+   122     DISPLAY SS-CLS.
+   123     MOVE SPACES TO FILE1-REC.
+   124 INCLUI-LOOP.
+   125     ACCEPT SS-TELA-REGISTRO.
+   126     IF COB-CRT-STATUS = COB-SCR-ESC
+*  12-S*********************                                           (   3)**
+**    Operand COB-CRT-STATUS is not declared
+   127         GO INCLUI-FIM
+   128     END-IF
+* 564-S**********                                                      (   3)**
+**    A scope-delimiter did not have a matching verb and was discarded.
+   129     IF FS-NOME EQUAL SPACES OR FS-ENDERECO EQUAL SPACES
+   130         MOVE "FAVOR INFORMAR NOME E ENDEREÇO" TO WS-MSGERRO
+   131         PERFORM MOSTRA-ERRO
+   132         GO INCLUI-LOOP
+   133     END-IF
+   134     WRITE FILE1-REC
+   135     INVALID KEY
+   136         MOVE "CLIENTE JÁ EXISTE" TO WS-MSGERRO
+   137         PERFORM MOSTRA-ERRO
+   138         MOVE ZEROS TO FS-KEY
+   139     END-WRITE.
+   140     GO INCLUI.
+   141 INCLUI-FIM.
+   142
+   143* -----------------------------------
+   144 CONSULTA.
+   145     MOVE "CONSULTA" TO WS-OP.
+   146     MOVE "ESC PARA ENCERRAR" TO WS-STATUS.
+   147     DISPLAY SS-CLS.
+   148 CONSULTA-LOOP.
+   149     MOVE SPACES TO FILE1-REC.
+   150     DISPLAY SS-TELA-REGISTRO.
+   151     PERFORM LE-CLIENTE THRU LE-CLIENTE-FIM.
+   152     IF FS-CANCELA
+   153         GO CONSULTA-FIM
+* Microsoft COBOL Version 5.0        L2.4 revision 003 15-May-19 23:56 Page   4
+*                                          SS.COB
+   154     END-IF
+   155     IF FS-OK
+   156         DISPLAY SS-DADOS
+   157         MOVE "PRESSIONE ENTER" TO WS-MSGERRO
+   158         PERFORM MOSTRA-ERRO
+   159     END-IF.
+   160     GO CONSULTA-LOOP.
+   161 CONSULTA-FIM.
+   162
+   163* -----------------------------------
+   164 ALTERA.
+   165     MOVE "ALTERAÇÃO" TO WS-OP.
+   166     MOVE "ESC PARA ENCERRAR" TO WS-STATUS.
+   167     DISPLAY SS-CLS.
+   168 ALTERA-LOOP.
+   169     MOVE SPACES TO FILE1-REC.
+   170     DISPLAY SS-TELA-REGISTRO.
+   171     PERFORM LE-CLIENTE THRU LE-CLIENTE-FIM.
+   172     IF FS-CANCELA
+   173         GO TO ALTERA-FIM
+   174     END-IF
+   175     IF FS-OK
+   176         ACCEPT SS-DADOS
+   177         IF COB-CRT-STATUS = COB-SCR-ESC
+*  12-S*************************                                       (   3)**
+**    Operand COB-CRT-STATUS is not declared
+   178             GO ALTERA-LOOP
+   179         END-IF
+   180     ELSE
+* 562-S********                                                        (   4)**
+**    An "ELSE" phrase did not have a matching IF and was discarded.
+   181         GO ALTERA-LOOP
+   182      END-IF
+* 564-S***********                                                     (   4)**
+**    A scope-delimiter did not have a matching verb and was discarded.
+   183      REWRITE FILE1-REC
+   184          INVALID KEY
+   185              MOVE "ERRO AO GRAVAR" TO WS-MSGERRO
+   186              PERFORM MOSTRA-ERRO
+   187          NOT INVALID KEY
+   188              CONTINUE
+   189      END-REWRITE.
+   190      GO ALTERA-LOOP.
+   191 ALTERA-FIM.
+   192
+   193* -----------------------------------
+   194 EXCLUI.
+   195     MOVE "EXCLUSÃO" TO WS-OP.
+   196     MOVE "ESC PARA ENCERRAR" TO WS-STATUS.
+   197     DISPLAY SS-CLS.
+   198     MOVE SPACES TO FILE1-REC.
+   199     DISPLAY SS-TELA-REGISTRO.
+   200     PERFORM LE-CLIENTE THRU LE-CLIENTE-FIM.
+   201     IF FS-CANCELA
+   202         GO EXCLUI-FIM
+   203     END-IF
+   204     IF NOT FS-OK
+   205         GO EXCLUI
+* Microsoft COBOL Version 5.0        L2.4 revision 003 15-May-19 23:56 Page   5
+*                                          SS.COB
+   206     END-IF
+   207     DISPLAY SS-DADOS.
+   208     MOVE "N" TO WS-ERRO.
+   209     MOVE "CONFIRMA A EXCLUSÃO DO CLIENTE (S/N)?" TO WS-MSGERRO.
+   210     ACCEPT SS-ERRO.
+* 357-S*******************                                             (   4)**
+**    Screen is display-only
+   211     IF NOT E-SIM
+   212         GO EXCLUI-FIM
+   213     END-IF
+   214     DELETE FILE1
+   215         INVALID KEY
+   216             MOVE "ERRO AO EXCLUIR" TO WS-MSGERRO
+   217             PERFORM MOSTRA-ERRO
+   218     END-DELETE.
+   219 EXCLUI-FIM.
+   220
+   221* -----------------------------------
+   222* LE CLIENTE E MOSTRA MENSAGEM SE CHAVE NÃO EXISTE
+   223 LE-CLIENTE.
+   224     ACCEPT SS-CHAVE.
+   225     IF NOT COB-CRT-STATUS = COB-SCR-ESC
+*  12-S*************************                                       (   5)**
+**    Operand COB-CRT-STATUS is not declared
+   226         READ FILE1
+   227             INVALID KEY
+   228                 MOVE "CLIENTE NÃO ENCONTRADO" TO WS-MSGERRO
+   229                 PERFORM MOSTRA-ERRO
+   230         END-READ
+   231     ELSE
+* 562-S********                                                        (   5)**
+**    An "ELSE" phrase did not have a matching IF and was discarded.
+   232         MOVE 99 to FS-STAT
+   233     END-IF.
+* 564-S**********                                                      (   5)**
+**    A scope-delimiter did not have a matching verb and was discarded.
+   234 LE-CLIENTE-FIM.
+   235
+   236* -----------------------------------
+   237* ABRE ARQUIVOS PARA ENTRADA E SAÍDA
+   238 ABRIR-ARQUIVOS.
+   239     OPEN I-O FILE1
+   240     IF FS-NAO-EXISTE THEN
+   241         OPEN OUTPUT FILE1
+   242         CLOSE FILE1
+   243         OPEN I-O FILE1
+   244     END-IF.
+   245
+   246* -----------------------------------
+   247* MOSTRA MENSAGEM, ESPERA ENTER, ATUALIZA BARRA STATUS
+   248 MOSTRA-ERRO.
+   249     DISPLAY SS-ERRO
+   250     ACCEPT SS-ERRO
+   251     DISPLAY SS-STATUS.
+* 357-S***********                                                     (   5)**
+**    Screen is display-only
+* Microsoft COBOL Version 5.0        L2.4 revision 003
+* (C)Copyright Microsoft Corp 1984, 1993       URN AXUPA/ZZ0/00001
+* Microsoft COBOL Version 5.0        L2.4 revision 003 15-May-19 23:56 Page   6
+*                                          SS.COB
+*                                              REF GNB-029052003A8
+*
+* Last message on page:  5
+*
+* Total Messages:    18
+* Unrecoverable :     0                    Severe  :    18
+* Errors        :     0                    Warnings:     0
+* Informational :     0                    Flags   :     0
+* Data:        1572     Code:        1589

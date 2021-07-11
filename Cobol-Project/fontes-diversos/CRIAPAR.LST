@@ -1,0 +1,180 @@
+* Microsoft COBOL Version 5.0        L2.4 revision 003 24-May-19 17:10 Page   1
+*                                       CRIAPAR.COB
+* Options: LIST(CRIAPAR.LST) ASMLIST(CRIAPAR.GRP)
+     1 IDENTIFICATION DIVISION.
+     2 PROGRAM-ID. crialuno-seq.
+     3 ENVIRONMENT DIVISION.
+     4 CONFIGURATION SECTION.
+     5 SPECIAL-NAMES.
+     6     DECIMAL-POINT IS COMMA.
+     7 INPUT-OUTPUT SECTION.
+     8 FILE-CONTROL.
+     9 SELECT ARQ-ENT0
+    10        ASSIGN TO 'F:\SOURCE\MENSA.TXT'
+    11        ORGANIZATION IS LINE SEQUENTIAL
+    12        FILE STATUS IS FS-STAT.
+    13
+    14 SELECT ARQ-ENT1
+    15        ASSIGN TO 'F:\SOURCE\CADALUNO.TXT'
+    16        ORGANIZATION IS LINE SEQUENTIAL.
+    17
+    18 SELECT ARQ-SAI
+    19        ASSIGN TO 'F:\SOURCE\MENSAL.DAT'
+    20        ORGANIZATION IS INDEXED
+    21        ACCESS MODE  IS DYNAMIC
+    22        RECORD KEY IS CODIGO.
+    23 DATA DIVISION.
+    24 FILE SECTION.
+    25 FD ARQ-ENT0.
+    26 01 REG-ENT0.
+    27     02 ANO-REF-ENT      PIC  9(4).
+    28     02 PARCELA-ENT      PIC  ZZZ.Z9.
+    29     02 MENSA-1.
+    30        03 MES-REF-1   PIC  A(9).
+    31        03 SITU-1      PIC A(02).
+    32     02 MENSA-2.
+    33        03 MES-REF-2   PIC  A(9).
+    34        03 SITU-2      PIC A(02).
+    35     02 MENSA-3.
+    36        03 MES-REF-3   PIC  A(9).
+    37        03 SITU-3      PIC A(02).
+    38     02 MENSA-4.
+    39        03 MES-REF-4   PIC  A(9).
+    40        03 SITU-4      PIC A(02).
+    41 FD  ARQ-ENT1.
+    42 01  REG-ENT1.
+    43     02 CODIGO-ENT         PIC 9(08).
+    44     02 NOME-ENT           PIC X(20).
+    45     02 S-NOME-ENT         PIC X(30).
+    46     02 FONE-ENT           PIC X(12).
+    47     02 CEP-ENT            PIC X(08).
+    48     02 CIDADE-ENT         PIC X(08).
+    49     02 UF-ENT             PIC X(02).
+    50     02 BAIRRO-ENT         PIC X(32).
+    51     02 RUA-ENT            PIC X(55).
+    52     02 FILLER             PIC X(3).
+    53
+    54 FD  ARQ-SAI.
+    55 01  REG-SAI.
+    56     02 CODIGO           PIC 9(08).
+    57     02 NOME             PIC A(20).
+* Microsoft COBOL Version 5.0        L2.4 revision 003 24-May-19 17:10 Page   2
+*                                       CRIAPAR.COB
+    58     02 S-NOME           PIC A(30).
+    59     02 ANO-REF-SAI      PIC 9(04).
+    60     02 PARCELA-SAI      PIC ZZZ.Z9.
+    61     02 MENSA-1-SAI.
+    62        03 MES-REF-1     PIC A(9).
+    63        03 SITU-1        PIC A(02).
+    64     02 MENSA-2-SAI.
+    65        03 MES-REF-2     PIC A(9).
+    66        03 SITU-2        PIC A(02).
+    67     02 MENSA-3-SAI.
+    68        03 MES-REF-3     PIC A(9).
+    69        03 SITU-3        PIC A(02).
+    70     02 MENSA-4-SAI.
+    71        03 MES-REF-4     PIC A(9).
+    72        03 SITU-4        PIC A(02).
+    73
+    74 WORKING-STORAGE SECTION.
+    75 01 WS-REG-SEQ.
+    76     02 ANO-SEQ          PIC  9(4).
+    77     02 PARCELA-SEQ      PIC  ZZZ.Z9.
+    78     02 MENSA-SEQ-1.
+    79        03 MES-SEQ-1     PIC  A(9).
+    80        03 SEQ-SITU-1    PIC A(02).
+    81     02 MENSA-SEQ-2.
+    82        03 MES-SEQ-2     PIC  A(9).
+    83        03 SEQ-SITU-2    PIC A(02).
+    84     02 MENSA-SEQ-3.
+    85        03 MES-SEQ-3     PIC  A(9).
+    86        03 SEQ-SITU-3    PIC A(02).
+    87     02 MENSA-SEQ-4.
+    88        03 MES-REF-4     PIC  A(9).
+    89        03 SEQ-SITU-4    PIC A(02).
+    90
+    91 01  WS-REG.
+    92     02 WS-CODIGO         PIC 9(08).
+    93     02 WS-NOME           PIC A(20).
+    94     02 WS-S-NOME         PIC A(30).
+    95     02 WS-ANO-REF        PIC 9(04).
+    96     02 WS-PARCELA        PIC ZZZ.Z9.
+    97     02 WS-MENSA-1.
+    98        03 WS-MES-REF1    PIC A(9).
+    99        03 WS-SITU-1      PIC A(02).
+   100     02 WS-MENSA-2.
+   101        03 WS-MES-REF2    PIC A(9).
+   102        03 WS-SITU-2      PIC A(02).
+   103     02 WS-MENSA-3.
+   104        03 WS-MES-REF3    PIC A(9).
+   105        03 WS-SITU-3      PIC A(02).
+   106     02 WS-MENSA-4.
+   107        03 WS-MES-REF4    PIC A(9).
+   108        03 WS-SITU-4      PIC A(02).
+   109
+   110 01  WS-EOF PIC A(1).
+   111 01  WS-CONTA-REG PIC 9(09).
+   112 77 FS-STAT PIC 9(02).
+   113     88 FS-OK         VALUE ZEROS.
+   114     88 FS-NAO-EXISTE VALUE 35.
+   115
+* Microsoft COBOL Version 5.0        L2.4 revision 003 24-May-19 17:10 Page   3
+*                                       CRIAPAR.COB
+   116 PROCEDURE DIVISION.
+   117 PERFORM ABRIR-ARQUIVOS.
+   118* inicia um loop ate que WS-EOF SEJA='Y' quando finaliza o loop
+   119 PERFORM UNTIL WS-EOF = 'Y'
+   120        READ ARQ-ENT0 INTO WS-REG-SEQ
+   121        AT END MOVE 'Y' TO WS-EOF
+   122        END-READ
+   123        READ ARQ-ENT1
+   124        AT END MOVE 'Y' TO WS-EOF
+   125        NOT AT END
+   126        MOVE ANO-SEQ          TO WS-ANO-REF
+   127        MOVE PARCELA-SEQ      TO WS-PARCELA
+   128        MOVE CODIGO-ENT       TO WS-CODIGO
+   129        MOVE NOME-ENT         TO WS-NOME
+   130        MOVE S-NOME-ENT       TO WS-S-NOME
+   131        MOVE MENSA-SEQ-1      TO WS-MENSA-1
+   132        MOVE MENSA-SEQ-2      TO WS-MENSA-2
+   133        MOVE MENSA-SEQ-3      TO WS-MENSA-3
+   134        MOVE MENSA-SEQ-4      TO WS-MENSA-4
+   135        WRITE REG-SAI FROM WS-REG
+   136        END-READ
+   137 END-PERFORM.
+   138 CLOSE ARQ-ENT0.
+   139 CLOSE ARQ-ENT1.
+   140 CLOSE ARQ-SAI.
+   141 STOP RUN.
+   142 EXIT PROGRAM.
+   143
+   144 ABRIR-ARQUIVOS.
+   145     OPEN OUTPUT ARQ-SAI
+   146     IF FS-NAO-EXISTE THEN
+   147         DISPLAY 'CRIANDO NOVO ARQUIVO ...'
+   148         CLOSE ARQ-SAI
+   149         OPEN I-O ARQ-SAI
+   150     END-IF
+   151
+   152     OPEN INPUT ARQ-ENT0
+   153     IF FS-NAO-EXISTE THEN
+   154         DISPLAY 'UM ARQUIVO DE ENTRADA Nao FOI ENCONTRADO....'
+   155         CLOSE ARQ-ENT0
+   156         CLOSE ARQ-SAI
+   157         STOP RUN
+   158     END-IF
+   159
+   160     OPEN INPUT ARQ-ENT1
+   161     IF FS-NAO-EXISTE THEN
+   162         DISPLAY 'UM ARQUIVO DE ENTRADA Nao FOI ENCONTRADO....'
+   163         CLOSE ARQ-ENT1
+   164         CLOSE ARQ-ENT0
+   165         CLOSE ARQ-SAI
+   166         STOP RUN
+   167     END-IF.
+* Microsoft COBOL Version 5.0        L2.4 revision 003
+* (C)Copyright Microsoft Corp 1984, 1993       URN AXUPA/ZZ0/00001
+*                                              REF GNB-029052003A8
+*
+* Total Messages:     0
+* Data:        1432     Code:         730

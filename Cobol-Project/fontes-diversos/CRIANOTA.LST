@@ -1,0 +1,163 @@
+* Microsoft COBOL Version 4.5        L2.4 revision 002 13-May-19 15:45 Page   1
+*                                     CRIANOTA.COB
+* Options: LIST(CRIANOTA.LST) ASMLIST(CRIANOTA.GRP)
+     1 IDENTIFICATION DIVISION.
+     2 PROGRAM-ID. CRIANOTA.
+     3 ENVIRONMENT DIVISION.
+     4 CONFIGURATION SECTION.
+     5 SPECIAL-NAMES.
+     6     DECIMAL-POINT IS COMMA.
+     7 INPUT-OUTPUT SECTION.
+     8 FILE-CONTROL.
+     9 SELECT ARQ-ENT0 ASSIGN TO 'F:\COBOL45\SOURCE\NOTAS.TXT'
+    10        ORGANIZATION IS LINE SEQUENTIAL.
+    11
+    12 SELECT ARQ-ENT1 ASSIGN TO 'F:\COBOL45\SOURCE\CADALUNOS.TXT'
+    13        ORGANIZATION IS LINE SEQUENTIAL.
+    14
+    15 SELECT ARQ-SAI ASSIGN TO 'F:\COBOL45\SOURCE\NOTAS.DAT'
+    16        ORGANIZATION IS INDEXED
+    17        ACCESS MODE IS DYNAMIC
+    18        RECORD KEY IS CODIGO-OK
+    19        FILE STATUS IS FS-STAT.
+    20
+    21 DATA DIVISION.
+    22 FILE SECTION.
+    23 FD  ARQ-ENT0.
+    24 01  REG-ENT0.
+    25     02 PRIMEIRO-ENT0       PIC 9(2).
+    26     02 SEGUNDO-ENT0        PIC 9(2).
+    27     02 TERCEIRO-ENT0       PIC 9(2).
+    28     02 QUARTO-ENT0         PIC 9(2).
+    29
+    30 FD  ARQ-ENT1.
+    31 01  REG-ENT1.
+    32     02 CODIGO-ENT         PIC 9(08).
+    33     02 NOME-ENT           PIC X(20).
+    34     02 S-NOME-ENT         PIC X(30).
+    35     02 FONE-ENT           PIC X(12).
+    36     02 CEP-ENT            PIC X(08).
+    37     02 CIDADE-ENT         PIC X(08).
+    38     02 UF-ENT             PIC X(02).
+    39     02 BAIRRO-ENT         PIC X(32).
+    40     02 RUA-ENT            PIC X(55).
+    41     02 FILLER             PIC X(3).
+    42
+    43  FD ARQ-SAI.
+    44  01 REG-OK.
+    45     02 CODIGO-OK             PIC 9(08).
+    46     02 NOME-OK               PIC X(20).
+    47     02 S-NOME-OK             PIC X(30).
+    48     02 PRIMEIRO-OK           PIC 9(02).
+    49     02 SEGUNDO-OK            PIC 9(02).
+    50     02 TERCEIRO-OK           PIC 9(02).
+    51     02 QUARTO-OK             PIC 9(02).
+    52
+    53 WORKING-STORAGE SECTION.
+    54 01  WS-REG-NOTAS.
+    55     02 WS-PRIMEIRO           PIC 9(02).
+    56     02 WS-SEGUNDO            PIC 9(02).
+    57     02 WS-TERCEIRO           PIC 9(02).
+* Microsoft COBOL Version 4.5        L2.4 revision 002 13-May-19 15:45 Page   2
+*                                     CRIANOTA.COB
+    58     02 WS-QUARTO             PIC 9(02).
+    59
+    60 01  WS-REG-ENT1.
+    61     02 WS-CODIGO             PIC 9(08).
+    62     02 WS-NOME               PIC X(20).
+    63     02 WS-S-NOME             PIC X(30).
+    64     02 WS-FONE               PIC X(12).
+    65     02 WS-CEP                PIC X(08).
+    66     02 WS-CIDADE             PIC X(08).
+    67     02 WS-UF                 PIC X(02).
+    68     02 WS-BAIRRO             PIC X(32).
+    69     02 WS-RUA                PIC X(55).
+    70     02 FILLER                PIC X(3).
+    71
+    72 01  WS-REG-OK.
+    73     02 WS-CODIGO-OK             PIC 9(08).
+    74     02 WS-NOME-OK               PIC X(20).
+    75     02 WS-S-NOME-OK             PIC X(30).
+    76     02 WS-PRIMEIRO-OK           PIC 9(02).
+    77     02 WS-SEGUNDO-OK            PIC 9(02).
+    78     02 WS-TERCEIRO-OK           PIC 9(02).
+    79     02 WS-QUARTO-OK             PIC 9(02).
+    80
+    81 01  WS-EOF PIC A(1).
+    82 77 FS-STAT PIC 9(02).
+    83     88 FS-OK         VALUE ZEROS.
+    84     88 FS-NAO-EXISTE VALUE 35.
+    85
+    86*
+    87*******************************************************
+    88 PROCEDURE DIVISION.
+    89 PERFORM ABRIR-ARQUIVOS.
+    90* inicia um loop ate que WS-EOF SEJA='Y' quando finaliza o loop
+    91 PERFORM UNTIL WS-EOF = 'Y'
+    92        READ ARQ-ENT0 INTO WS-REG-NOTAS
+    93        AT END MOVE 'Y' TO WS-EOF
+    94        END-READ
+    95        READ ARQ-ENT1 INTO WS-REG-ENT1
+    96        AT END MOVE 'Y' TO WS-EOF
+    97        NOT AT END
+    98        PERFORM MOSTRA
+    99        MOVE WS-CODIGO      TO WS-CODIGO-OK
+   100        MOVE WS-NOME        TO WS-NOME-OK
+   101        MOVE WS-S-NOME      TO WS-S-NOME-OK
+   102        MOVE WS-PRIMEIRO    TO WS-PRIMEIRO-OK
+   103        MOVE WS-SEGUNDO     TO WS-SEGUNDO-OK
+   104        MOVE WS-TERCEIRO    TO WS-TERCEIRO-OK
+   105        MOVE WS-QUARTO      TO WS-QUARTO-OK
+   106        WRITE REG-OK FROM WS-REG-OK
+   107        END-READ
+   108 END-PERFORM.
+   109 CLOSE ARQ-ENT0.
+   110 CLOSE ARQ-ENT1.
+   111 CLOSE ARQ-SAI.
+   112 STOP RUN.
+   113******************************************************************
+   114*  DISPLAY  'CIDADE..:' WS-CIDADE
+   115*  DISPLAY  'CEP.....:' WS-CEP
+* Microsoft COBOL Version 4.5        L2.4 revision 002 13-May-19 15:45 Page   3
+*                                     CRIANOTA.COB
+   116*  DISPLAY  'RUA.....:' WS-RUA
+   117*  DISPLAY  'BAIRRO..:' WS-BAIRRO
+   118
+   119 MOSTRA.
+   120 DISPLAY  'CODIGO..:' WS-CODIGO
+   121 DISPLAY  'NOME....:' WS-NOME
+   122 DISPLAY  'S-NOME..:' WS-S-NOME
+   123 DISPLAY  'PRIMEIRO:' WS-PRIMEIRO
+   124 DISPLAY  'SEGUNDO.:' WS-SEGUNDO
+   125 DISPLAY  'TERCEIRO:' WS-TERCEIRO
+   126 DISPLAY  'QUARTO..:' WS-QUARTO.
+   127 DISPLAY '-------------------------------------------------'.
+   128
+   129 ABRIR-ARQUIVOS.
+   130     OPEN OUTPUT ARQ-SAI
+   131     IF FS-NAO-EXISTE THEN
+   132         DISPLAY 'CRIANDO NOVO ARQUIVO ...'
+   133         CLOSE ARQ-SAI
+   134         OPEN I-O ARQ-SAI
+   135     END-IF
+   136
+   137     OPEN INPUT ARQ-ENT0
+   138     IF FS-NAO-EXISTE THEN
+   139         DISPLAY 'UM ARQUIVO DE ENTRADA Nao FOI ENCONTRADO....'
+   140         CLOSE ARQ-ENT0
+   141         STOP RUN
+   142     END-IF
+   143
+   144     OPEN INPUT ARQ-ENT1
+   145     IF FS-NAO-EXISTE THEN
+   146         DISPLAY 'UM ARQUIVO DE ENTRADA Nao FOI ENCONTRADO....'
+   147         CLOSE ARQ-ENT1
+   148         STOP RUN
+   149     END-IF.
+   150
+* Microsoft COBOL Version 4.5        L2.4 revision 002
+* (C)Copyright Microsoft Corp 1984, 1991       URN AXUPA/MS0/000000
+*                                              REF GNB-024050002A7
+*
+* Total Messages:     0
+* Data:        1592     Code:         812     Dictionary:        2702

@@ -1,0 +1,104 @@
+       IDENTIFICATION DIVISION.
+      *PERACIO.DIAS@GMAIL.COM.
+       PROGRAM-ID. MAKEFONE.
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SPECIAL-NAMES.
+           DECIMAL-POINT IS COMMA.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+              SELECT PRINT-OUT ASSIGN TO PRTLINE.
+              SELECT FILE-IN ASSIGN   TO RECIN
+              ORGANIZATION IS SEQUENTIAL.
+              SELECT FILE-OUT ASSIGN  TO RECOUT
+              ORGANIZATION IS  SEQUENTIAL.
+
+       DATA DIVISION.
+       FILE SECTION.
+       FD  FILE-IN RECORD CONTAINS 170 CHARACTERS RECORDING MODE F.
+       01  RECORD-IN.
+           05 CODE-IN               PIC 9(08).
+           05 NAME-IN               PIC X(20).
+           05 LNAME-IN              PIC X(30).
+           05 DDD-IN                PIC 9(03).
+           05 PHONE-IN              PIC 9(10).
+           05 RESERVED-FIELD        PIC X(99).
+
+       FD  PRINT-OUT RECORDING MODE F.
+       01  RECORD-PRINT.
+           05 CODE-PRINT            PIC 9(08).
+           05 NAME-PRINT            PIC X(20).
+           05 LNAME-PRINT           PIC X(30).
+           05 DDD-PRINT             PIC 9(03).
+           05 PHONE-PRINT           PIC 9(10).
+           05 RESERVED-FIELD        PIC X(99).
+
+       FD  FILE-OUT RECORD CONTAINS 170 CHARACTERS RECORDING MODE F.
+       01  RECORD-OUT.
+           05 CODE-OUT              PIC 9(08).
+           05 NAME-OUT              PIC X(20).
+           05 LNAME-OUT             PIC X(30).
+           05 DDD-OUT               PIC 9(03).
+           05 PHONE-OUT             PIC 9(10).
+           05 RESERVED-FIELD        PIC X(99) VALUE SPACES.
+
+       WORKING-STORAGE SECTION.
+
+       01  WS-RECORD.
+           05 WS-CODE               PIC 9(08).
+           05 WS-NAME               PIC X(20).
+           05 WS-LNAME              PIC X(30).
+           05 WS-DDD                PIC 9(03).
+           05 WS-PHONE              PIC 9(10).
+           05 WS-RESERVED-FIELD     PIC X(99).
+      *
+       01 FLAGS.
+         05 LASTREC           PIC X VALUE 'N'.
+      *!  VARIAVEIS PARA GERAR NUMEROS RANDOMICOS  !
+
+       01  RND-NUM PIC 99V999.
+       01  HORARIO PIC 9(08).
+       01  HORA REDEFINES HORARIO.
+           02  HH  PIC 99.
+           02  HM  PIC 99.
+           02  HS  PIC 99.
+           02  HX  PIC 99.
+       01  NUMERO  PIC 9(6).
+      *! VARIAVEIL PARA ARMAZENAR O TELEPHONE CRIADO!
+       01 FC-PHONE              PIC 9(10).
+
+       PROCEDURE DIVISION.
+           OPEN INPUT   FILE-IN.
+           OPEN OUTPUT  PRINT-OUT.
+           OPEN OUTPUT  FILE-OUT.
+
+      *   PERFORM  UNTIL LASTREC = 'Y'
+           PERFORM 155 TIMES
+           PERFORM READ-RECORD-IN
+           PERFORM CREATE-PHONE
+
+              MOVE SPACES TO WS-RESERVED-FIELD
+              MOVE 15 TO WS-DDD
+              MOVE FC-PHONE  TO WS-PHONE
+              MOVE WS-RECORD TO RECORD-PRINT
+              WRITE RECORD-PRINT
+              MOVE WS-RECORD TO RECORD-OUT
+              WRITE RECORD-OUT
+           END-PERFORM.
+
+           CLOSE FILE-IN.
+           CLOSE PRINT-OUT.
+           CLOSE FILE-OUT.
+           STOP RUN.
+      *
+       READ-RECORD-IN.
+           READ FILE-IN INTO WS-RECORD
+           AT END MOVE 'Y' TO LASTREC
+           END-READ.
+      *
+       CREATE-PHONE.
+            ACCEPT HORARIO FROM TIME
+            COMPUTE NUMERO = (HH * HX) / HM + HS
+            COMPUTE RND-NUM = FUNCTION RANDOM
+            MULTIPLY RND-NUM BY NUMERO GIVING RND-NUM
+            COMPUTE FC-PHONE = RND-NUM + 9978090968.

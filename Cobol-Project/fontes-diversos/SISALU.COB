@@ -1,0 +1,551 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.      SISALU.
+       AUTHOR.         PERINHA.
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SPECIAL-NAMES.
+           DECIMAL-POINT IS COMMA.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT ARQ-ENT ASSIGN TO DISK
+                  ORGANIZATION IS INDEXED
+                  ACCESS MODE  IS DYNAMIC
+                  LOCK MODE    IS AUTOMATIC
+                  RECORD KEY   IS CODIGO.
+           SELECT ARQ-PARCELA ASSIGN TO DISK        
+                  ORGANIZATION IS INDEXED
+                  ACCESS MODE  IS DYNAMIC
+                  RECORD KEY IS PARC-CODIGO.
+
+           SELECT NOTAS-ENT ASSIGN TO DISK
+                  ORGANIZATION IS INDEXED
+                  ACCESS MODE IS DYNAMIC
+                  RECORD KEY IS NOTA-CODIGO
+                  LOCK MODE IS AUTOMATIC
+                  FILE STATUS  IS WS-STATUS.
+
+       DATA DIVISION.
+       FILE SECTION.
+       FD  ARQ-ENT
+           LABEL RECORD IS STANDARD
+           DATA  RECORD IS REG-ENT
+           VALUE OF FILE-ID "ALUNOS.DAT".
+       01  REG-ENT.
+           02 CODIGO         PIC 9(08).
+           02 NOME           PIC X(20).
+           02 S-NOME         PIC X(30).
+           02 FONE           PIC X(12).
+           02 CEP            PIC X(08).
+           02 CIDADE         PIC X(08).
+           02 UF             PIC X(02).
+           02 BAIRRO         PIC X(32).
+           02 RUA            PIC X(55).
+
+       FD  NOTAS-ENT
+           LABEL RECORD IS STANDARD
+           DATA  RECORD IS NOTAS-REG
+           VALUE OF FILE-ID "NOTAS.DAT".
+       01  NOTAS-REG.
+           02 NOTA-CODIGO               PIC 9(08).
+           02 NOTA-NOME                 PIC X(20).
+           02 NOTA-S-NOME               PIC X(30).
+           02 PRIMEIRO                  PIC 9(02).
+           02 SEGUNDO                   PIC 9(02).
+           02 TERCEIRO                  PIC 9(02).
+           02 QUARTO                    PIC 9(02).
+
+       FD  ARQ-PARCELA
+           LABEL RECORD IS STANDARD
+           DATA  RECORD IS PARC-REG
+           VALUE OF FILE-ID "MENSAL.DAT".
+       01  PARC-REG.
+           02 PARC-CODIGO         PIC 9(08).
+           02 PARC-NOME           PIC A(20). 
+           02 PARC-S-NOME         PIC A(30).
+           02 PARC-ANO-REF        PIC 9(04). 
+           02 VAL-PARCELA         PIC ZZZ.Z9.
+           02 MENSA-1-SAI.
+              03 MES-REF-1        PIC A(9).
+              03 SITU-1           PIC A(02).  
+           02 MENSA-2-SAI.
+              03 MES-REF-2        PIC A(9).
+              03 SITU-2           PIC A(02).
+           02 MENSA-3-SAI.
+              03 MES-REF-3        PIC A(9).
+              03 SITU-3           PIC A(02).
+           02 MENSA-4-SAI.
+              03 MES-REF-4        PIC A(9).
+              03 SITU-4           PIC A(02).
+
+       WORKING-STORAGE SECTION.
+      *=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
+      *              cores para screen section.
+      *=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
+       78  BLACK                  VALUE 0.
+       78  BLUE                   VALUE 1.
+       78  GREEN                  VALUE 2.
+       78  CYAN                   VALUE 3.
+       78  RED                    VALUE 4.
+       78  MAGENTA                VALUE 5.
+       78  YELLOW                 VALUE 6.
+       78  WHITE                  VALUE 7.
+      *=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
+      *    estas cores sao usadas apenas para cor de fundo
+      *=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
+      *
+
+       78  BRIGHT-BLACK                     VALUE 8.
+       78  BRIGHT-BLUE                      VALUE 9.
+       78  BRIGHT-GREEN                     VALUE 10.
+       78  BRIGHT-CYAN                      VALUE 11.
+       78  BRIGHT-RED                       VALUE 12.
+       78  BRIGHT-MAGENTA                   VALUE 13.
+       78  BRIGHT-BROWN                     VALUE 14.
+       78  BRIGHT-WHITE                     VALUE 15.
+
+       77  WS-STATUS    PIC X(02) VALUE SPACES.
+
+       77 FS-STAT PIC 9(02).
+           88 FS-OK               VALUE ZEROS.
+           88 FS-CANCELA          VALUE 99.
+           88 FS-NAO-EXISTE       VALUE 35.
+
+       01  WS-REGISTRO.
+           02 WS-CODIGO PIC 9(08) VALUE ZEROS.
+           02 WS-NOME   PIC X(20) VALUE SPACES.
+           02 WS-S-NOME PIC X(30) VALUE SPACES.
+           02 WS-FONE   PIC X(12) VALUE SPACES.
+           02 WS-CEP    PIC X(08) VALUE SPACES.
+           02 WS-CIDADE PIC X(08) VALUE SPACES.
+           02 WS-UF     PIC X(02) VALUE SPACES.
+           02 WS-BAIRRO PIC X(32) VALUE SPACES.
+           02 WS-RUA    PIC X(55) VALUE SPACES.
+       01 VARIAVEIS-GERAIS.
+
+           02 LINHA-BRANCO          PIC X(80) VALUE SPACES.
+           02 WS-PARCELA            PIC 9(4).
+           02 WS-NROPARC            PIC 9(2) VALUE 3.
+           02 W-MEDIA               PIC 9.9   VALUE ZEROS.
+           02 WS-CONT               PIC 9(03) VALUE ZEROS.
+           02 WS-CODIGO-NOVO        PIC 9(08) VALUE ZEROS. 
+           02 W-NADA                PIC X     VALUE SPACES.
+           02 W-OPCAO               PIC X(1)  VALUE ZEROS.
+           02 W-MODO                PIC X(1)  VALUE ZEROS.
+
+       01  WS-DATA.
+           02 WS-ANO    PIC 9(02) VALUE ZEROS.
+           02 WS-MES    PIC 9(02) VALUE ZEROS.
+           02 WS-DIA    PIC 9(02) VALUE ZEROS.
+       01  WS-HORA.
+           02 WS-HOR    PIC 9(02) VALUE ZEROS.
+           02 WS-MIN    PIC 9(02) VALUE ZEROS.
+           02 WS-SEG    PIC 9(02) VALUE ZEROS.
+           02 WS-CSE    PIC 9(02) VALUE ZEROS.
+
+       LINKAGE SECTION.
+       01  LK-VARIAVEIS.
+           03 XXXXXX    PIC X(06).
+           03 YYYYYY    PIC X(06).
+
+       SCREEN SECTION.
+       01  SS-MENU1 HIGHLIGHT BACKGROUND-COLOR BLUE.
+           02 LINE  1 COLUMN  1 VALUE "DATA:".
+           02 LINE  1 COLUMN 20 VALUE
+      -     "CADASTRO DE ALUNOS :       MODO=                 ".
+           02 LINE 3 COL 1 VALUE
+      -      "CONSULTA / ALTERA / EXCLUI=1 - CADASTRAR=2  ".
+           02 LINE 3 COL 45 VALUE "NOTAS=3  FINANCEIRO=4  SAIR=9".
+
+        01  SS-TELA1 FOREGROUND-COLOR CYAN.
+           02 BLANK SCREEN.
+           02 LINE  6 COLUMN 07 VALUE "Codigo............ :".
+           02 LINE  7 COLUMN 07 VALUE "Aluno............. :".
+           02 LINE  8 COLUMN 07 VALUE "Fone.............. :".
+           02 LINE 09 COLUMN 07 VALUE "CEP............... :".
+           02 LINE 10 COLUMN 07 VALUE "Cidade ........... :".
+           02 LINE 11 COLUMN 07 VALUE "UF................ :".
+           02 LINE 12 COLUMN 07 VALUE "Bairro............ :".
+           02 LINE 13 COLUMN 07 VALUE "Rua............... :".
+           02 LINE 24 COLUMN  1 VALUE "AVISO:".
+           02 LINE 25 COLUMN  1 VALUE "ESCOLHA OPCAO:".
+      *
+      *=================================================================
+      *
+       PROCEDURE DIVISION.
+
+       INICIO.
+       OPEN I-O ARQ-ENT.
+       OPEN I-O NOTAS-ENT.
+       OPEN I-O ARQ-PARCELA.
+       PERFORM UNTIL W-OPCAO = "9"
+       PERFORM LIMPA-CAMPOS
+       DISPLAY SS-TELA1
+       DISPLAY SS-MENU1
+       PERFORM INICIA-DATAS
+         ACCEPT W-OPCAO AT 2515 WITH PROMPT
+         EVALUATE TRUE
+          WHEN W-OPCAO = "1" PERFORM CONS-ALT-DEL THRU CONS-ALT-DEL-FIM
+          WHEN W-OPCAO = "2" PERFORM INCLUIR THRU INCLUIR-FIM
+          WHEN W-OPCAO = "3" PERFORM MOSTRA-NOTAS THRU MOSTRA-NOTAS-FIM
+          WHEN W-OPCAO = "4" PERFORM FINANCE THRU FINANCE-FIM
+          WHEN W-OPCAO = "9" GO TO SAIR
+         END-EVALUATE
+       END-PERFORM.
+      *=========================================================================
+      *    FINALIZA AQUI O PROGRAMA
+       SAIR.
+       CLOSE ARQ-ENT.
+       CLOSE NOTAS-ENT.
+       CLOSE ARQ-PARCELA. 
+       STOP RUN.
+      *    FINALIZA AQUI O PROGRAMA
+      *=========================================================================
+      *
+       CONS-ALT-DEL.
+       MOVE SPACES TO W-NADA.
+       PERFORM LIMPA-CAMPOS.
+       DISPLAY "CONSULTA/ALTERA/DELETA" AT 0154.
+       ACCEPT  CODIGO AT 0630 WITH PROMPT.
+       IF CODIGO = 0 
+             DISPLAY "CODIGO INVALIDO  !" AT 2407
+             ACCEPT W-NADA AT 2426
+             MOVE ZEROS TO CODIGO
+             DISPLAY LINHA-BRANCO AT 2401
+             GO TO CONS-ALT-DEL-FIM
+       ELSE
+
+       READ ARQ-ENT
+                KEY IS CODIGO 
+                INVALID KEY
+                MOVE SPACES TO NOME S-NOME FONE BAIRRO CIDADE UF CEP RUA
+                DISPLAY "Registro nao encontrado !" AT 2407
+                ACCEPT W-NADA AT 2426
+                DISPLAY LINHA-BRANCO AT 2401
+                GO TO CONS-ALT-DEL
+       END-READ
+       DISPLAY NOME      AT 0729.
+       DISPLAY S-NOME    AT 0755.
+       DISPLAY FONE      AT 0829.
+       DISPLAY CEP       AT 0929.
+       DISPLAY CIDADE    AT 1029.
+       DISPLAY UF        AT 1129.
+       DISPLAY BAIRRO    AT 1229.
+       DISPLAY RUA       AT 1329.
+       DISPLAY "C=CONTINUA CONSULTA / E=EDITAR / D=DELETA/ F=FIM :"
+      -         AT 2515.
+         
+       ACCEPT  W-OPCAO AT 2565 WITH PROMPT.
+       MOVE W-OPCAO TO W-MODO
+       DISPLAY LINHA-BRANCO AT 2501
+       IF W-MODO = "C" OR W-MODO = "c" GO TO CONS-ALT-DEL.
+       IF W-MODO = "E" OR W-MODO = "e" GO TO ALTERA.
+       IF W-MODO = "D" OR W-MODO = "d" GO TO EXCLUIR.
+       MOVE SPACES TO W-OPCAO
+       GO TO CONS-ALT-DEL-FIM.
+
+       ALTERA.
+       MOVE SPACES TO W-OPCAO.
+       DISPLAY " ** ALTERA **  " AT 0154.
+       PERFORM PEGA-DADOS.
+       DISPLAY  "Confirma alteracao S/N ?" AT 2407.
+       ACCEPT W-NADA AT 2431.
+       DISPLAY LINHA-BRANCO AT 2401.
+       IF W-NADA = "n" move "N" TO W-NADA.
+       IF W-NADA = "N"
+                 MOVE SPACE TO W-OPCAO
+                 GO TO CONS-ALT-DEL
+       END-IF.
+       
+       REWRITE REG-ENT
+           INVALID KEY
+                   DISPLAY "ERRO AO GRAVAR !" AT 2407
+                   ACCEPT W-NADA AT 2424
+                   MOVE SPACES TO W-OPCAO
+                   DISPLAY LINHA-BRANCO AT 2407
+                   GO TO CONS-ALT-DEL
+           NOT INVALID KEY
+           DISPLAY "Registro alterado com sucesso   !" AT 2407
+           ACCEPT W-NADA AT 2438
+           DISPLAY LINHA-BRANCO AT 2401
+           DISPLAY "                                                   
+      -            "                " AT 2407           
+           MOVE SPACES TO W-NADA
+       END-REWRITE.
+       DISPLAY "CONTINUAR=C  S=SAIR->" AT 2515.
+       ACCEPT W-NADA AT 2536.
+       DISPLAY LINHA-BRANCO AT 2501.
+       IF W-NADA = "C" or W-NADA = "c"  GO TO CONS-ALT-DEL
+       END-IF.
+       MOVE SPACES TO W-NADA.
+       GO TO CONS-ALT-DEL-FIM.
+       EXCLUIR.
+       MOVE SPACES TO W-NADA.
+       DISPLAY "**  EXCLUIR  **" AT 0154.
+       DISPLAY  "Confirma EXLUSAO  S/N ?" AT 2407.
+       ACCEPT W-NADA AT 2430.
+       DISPLAY LINHA-BRANCO AT 2501.
+       IF W-NADA = "n" move "N" TO W-NADA.
+       IF W-NADA = "N"
+                 MOVE SPACES TO W-OPCAO
+                 GO TO CONS-ALT-DEL
+       END-IF.
+       DELETE ARQ-ENT RECORD 
+             INVALID KEY
+             DISPLAY "ERRO AO EXCLUIR..." AT 2407
+       END-DELETE.
+       MOVE SPACES TO W-NADA.           
+       DISPLAY "CONTINUAR=C  S=SAIR->" AT 2515.
+       ACCEPT W-NADA AT 2536.
+       DISPLAY LINHA-BRANCO AT 2501.
+       IF W-NADA = "C" or W-NADA = "c"  GO TO CONS-ALT-DEL
+       END-IF.
+       CONS-ALT-DEL-FIM.
+
+      *=================================================================
+       INCLUIR.
+      * PROCURA PELO ULTIMO REGISTRO
+       MOVE "N" TO W-NADA.
+       PERFORM UNTIL W-NADA = "Y"
+         READ ARQ-ENT NEXT RECORD
+           AT END 
+            MOVE "Y" TO W-NADA
+           NOT AT END
+             CONTINUE
+         END-READ.
+      *
+      *ENCONTRAMOS O ULTIMO REGISTRO PARA OBTER O ULTIMO CODIGO GRAVADO
+      *O SISTEMA GERA UM NOVO CODIGO AUTOMATICAMENTE
+       INCLUI-RESTART.
+       MOVE SPACES TO W-NADA.
+       DISPLAY SS-TELA1.
+       MOVE CODIGO TO WS-CODIGO-NOVO.
+       ADD 1 TO WS-CODIGO-NOVO.
+       IF WS-CODIGO-NOVO > 20199999
+          DISPLAY "Arquivo CHEIO impossivel cadastrar novo registro!"
+      -   AT 2407
+          ACCEPT W-NADA AT 2457 
+          DISPLAY LINHA-BRANCO AT 2401
+          GO TO INCLUIR-FIM
+       ELSE
+       MOVE WS-CODIGO-NOVO TO CODIGO
+       END-IF.
+       DISPLAY "** CADASTRAR **" AT 0154.
+       PERFORM LIMPA-DADOS.
+       PERFORM LIMPA-CAMPOS.
+       DISPLAY CODIGO AT 0629.
+       INCLUI-LOOP.
+       PERFORM PEGA-DADOS.
+       IF NOME   EQUAL SPACES OR S-NOME EQUAL SPACES
+          GO TO ERRO.
+       IF FONE   EQUAL SPACES OR CEP EQUAL SPACES 
+          GO TO ERRO.
+       IF CIDADE EQUAL SPACES OR UF EQUAL SPACES
+          GO TO ERRO.
+       IF  BAIRRO EQUAL SPACES OR RUA EQUAL SPACES
+           GO TO ERRO.
+       GO TO TUDO-OK.    
+       ERRO. 
+       DISPLAY "POR FAVOR CAMPOS EM BRANCO NAO SAO ACEITOS!" AT 2407.
+       ACCEPT W-NADA AT 2451.
+       GO TO INCLUI-LOOP. 
+       TUDO-OK.
+       DISPLAY  "Confirma NOVO cadastro S/N ?" AT 2407.
+       MOVE SPACES TO W-NADA.
+       ACCEPT W-NADA AT 2435.
+       DISPLAY LINHA-BRANCO AT 2401.
+       IF W-NADA = "n" move "N" TO W-NADA.
+       IF W-NADA = "N"
+                 MOVE SPACE TO W-NADA
+                 GO TO INCLUIR-FIM 
+       END-IF.     
+       WRITE REG-ENT
+            INVALID KEY
+                DISPLAY "CLIENTE JA EXISTE" AT 2407
+                ACCEPT W-NADA AT 2425
+                DISPLAY LINHA-BRANCO AT 2407
+       END-WRITE.
+       DISPLAY "CONTINUAR=C  S=SAIR->" AT 2515.
+       ACCEPT W-NADA AT 2536.
+       DISPLAY LINHA-BRANCO AT 2501.
+       IF W-NADA ="c" THEN MOVE "C" TO W-NADA.
+       IF W-NADA = "C"  GO TO INCLUI-RESTART 
+       END-IF.
+       INCLUIR-FIM.
+      *=================================================================
+       MOSTRA-NOTAS.
+      * OPEN INPUT NOTAS-ENT.
+       NOTAS-RET.
+       MOVE ZEROS TO CODIGO.
+       MOVE ZEROS TO NOTA-CODIGO.
+       PERFORM LIMPA-NOTAS.
+       DISPLAY "** N O T A S **" AT 0154.
+       MOVE SPACES TO W-OPCAO.
+       MOVE SPACES TO W-NADA.
+       ACCEPT  CODIGO AT 0630 WITH PROMPT.
+       IF CODIGO = 0 
+             DISPLAY "CODIGO INVALIDO  !" AT 2407
+             ACCEPT W-NADA AT 2426
+             DISPLAY "                                 " AT 2407
+             GO TO NOTAS-RET
+       END-IF.   
+       MOVE CODIGO TO NOTA-CODIGO.
+       READ NOTAS-ENT
+                KEY IS NOTA-CODIGO 
+                INVALID KEY
+                MOVE SPACES TO  NOTA-NOME NOTA-S-NOME
+                DISPLAY "Registro nao encontrado !" AT 2407
+                ACCEPT W-NADA AT 2426
+                DISPLAY LINHA-BRANCO AT 2401
+                GO TO NOTAS-SAI
+       END-READ.
+       DISPLAY "PRIMEIRO MODULO....:" AT 0807.
+       DISPLAY "SEGUNDO  MODULO....:" AT 0907.
+       DISPLAY "TERCEIRO MODULO....:" AT 1007.
+       DISPLAY "QUARTO   MODULO....:" AT 1107.
+       DISPLAY "ALUNO..............:" AT 0707.
+       DISPLAY NOTA-NOME      AT 0729.
+       DISPLAY NOTA-S-NOME    AT 0755.
+       DISPLAY PRIMEIRO       AT 0829.
+       DISPLAY SEGUNDO        AT 0929.
+       DISPLAY TERCEIRO       AT 1029.
+       DISPLAY QUARTO         AT 1129.
+       DISPLAY "----------------------------------"  AT 1207.
+       DISPLAY "AVALIACAO =========>"  AT 1307.
+       COMPUTE W-MEDIA = (PRIMEIRO+SEGUNDO+TERCEIRO+QUARTO) / 4.
+       DISPLAY W-MEDIA AT 1329.
+       IF W-MEDIA > 5 DISPLAY "APROVADO !" AT 1429.
+       IF W-MEDIA < 5 DISPLAY "REPROVADO!" AT 1429.
+       NOTAS-SAI.
+       DISPLAY "C = CONTINUA CONSULTAR NOTAS  /  F = FIM :"
+      -         AT 2515.
+       ACCEPT  W-OPCAO AT 2557 WITH PROMPT.
+       DISPLAY LINHA-BRANCO AT 2501.
+       IF W-OPCAO = "C" OR W-OPCAO = "c" GO TO NOTAS-RET.       
+       MOVE SPACES TO W-OPCAO.
+       MOSTRA-NOTAS-FIM.
+      *=================================================================
+       FINANCE.
+       MOVE ZEROS TO CODIGO.
+       MOVE ZEROS TO PARC-CODIGO.
+       PERFORM LIMPA-NOTAS.
+       DISPLAY "*FINANCEIRO*" AT 0154.
+       MOVE SPACES TO W-OPCAO.
+       MOVE SPACES TO W-NADA.
+       ACCEPT  CODIGO AT 0630 WITH PROMPT.
+       IF CODIGO = 0 
+             DISPLAY "CODIGO INVALIDO  !" AT 2407
+             ACCEPT W-NADA AT 2426
+             DISPLAY "                                 " AT 2407
+             GO TO FINANCE
+       END-IF.   
+       MOVE CODIGO TO PARC-CODIGO.
+       READ ARQ-PARCELA
+                KEY IS PARC-CODIGO 
+                INVALID KEY
+                MOVE SPACES TO  PARC-NOME PARC-S-NOME
+                DISPLAY "Registro nao encontrado !" AT 2407
+                ACCEPT W-NADA AT 2426
+                DISPLAY LINHA-BRANCO AT 2401
+                GO TO FINANCE-SAI
+       END-READ.
+
+       DISPLAY "ALUNO..............:" AT 0707.
+       DISPLAY PARC-NOME      AT 0729.
+       DISPLAY PARC-S-NOME    AT 0755.
+
+       DISPLAY "ANO REF............:" AT 0807.
+       DISPLAY PARC-ANO-REF AT 0827.
+
+       DISPLAY "VALOR DA PARCELA...:" AT 0837.
+       DISPLAY VAL-PARCELA AT 0858.
+
+       DISPLAY "MES REF..:" AT 0907.
+       DISPLAY MES-REF-1 AT 0917.
+       DISPLAY "SITUACAO.:" AT 0927.
+       DISPLAY SITU-1 AT 0937.
+
+       DISPLAY "MES REF..:" AT 1007.
+       DISPLAY MES-REF-2 AT 1017.
+       DISPLAY "SITUACAO.:" AT 1027.
+       DISPLAY SITU-2 AT 1037.
+
+       DISPLAY "MES REF..:" AT 1107.
+       DISPLAY MES-REF-3 AT 1117.
+       DISPLAY "SITUACAO.:" AT 1127.
+       DISPLAY SITU-3 AT 1137.
+
+       DISPLAY "MES REF..:" AT 1207.
+       DISPLAY MES-REF-4 AT 1217.
+       DISPLAY "SITUACAO.:" AT 1227.
+       DISPLAY SITU-4 AT 1237.
+
+       FINANCE-SAI.
+       DISPLAY "C = CONTINUA CONSULTAR PARCELAS /  F = FIM :"
+      -         AT 2515.
+       ACCEPT  W-OPCAO AT 2559 WITH PROMPT.
+       DISPLAY LINHA-BRANCO AT 2501.
+       IF W-OPCAO = "C" OR W-OPCAO = "c" GO TO FINANCE.
+       MOVE ZEROS TO W-OPCAO.
+       FINANCE-FIM.
+      *=================================================================
+       INICIA-DATAS.
+       ACCEPT WS-DATA FROM DATE
+       ACCEPT WS-HORA FROM TIME
+       DISPLAY "/  /" AT 0108
+       DISPLAY WS-DIA AT 0106
+       DISPLAY WS-MES AT 0109
+       DISPLAY WS-ANO AT 0112
+       .
+      *=================================================================
+       PEGA-DADOS.
+       ACCEPT NOME   AT 0729
+
+       ACCEPT S-NOME AT 0755
+
+       ACCEPT FONE   AT 0829
+
+       ACCEPT CEP    AT 0929
+
+       ACCEPT CIDADE AT 1029
+
+       ACCEPT UF     AT 1129
+
+       ACCEPT BAIRRO AT 1229
+
+       ACCEPT RUA    AT 1329
+       .
+      *
+      *=================================================================
+      *
+       LIMPA-CAMPOS.
+           DISPLAY WS-NOME AT 0729 WITH FOREGROUND-COLOR WHITE
+           DISPLAY WS-S-NOME AT 0755 WITH FOREGROUND-COLOR WHITE
+           DISPLAY WS-FONE AT 0829 WITH FOREGROUND-COLOR GREEN
+           DISPLAY WS-CEP AT 0929 WITH FOREGROUND-COLOR CYAN
+           DISPLAY WS-CIDADE AT 1029 WITH FOREGROUND-COLOR MAGENTA
+           DISPLAY WS-UF AT 1129 WITH FOREGROUND-COLOR YELLOW
+           DISPLAY WS-BAIRRO AT 1229 WITH FOREGROUND-COLOR RED
+           DISPLAY WS-RUA AT 1329 WITH FOREGROUND-COLOR GREEN
+           DISPLAY "                                                   
+      -            "                   " AT 2515
+           DISPLAY "                                                   
+      -            "                " AT 2407           
+       .
+      *
+      *=================================================================
+       LIMPA-NOTAS.
+           DISPLAY LINHA-BRANCO AT 0701 WITH FOREGROUND-COLOR GREEN
+           DISPLAY LINHA-BRANCO AT 0801 WITH FOREGROUND-COLOR GREEN
+           DISPLAY LINHA-BRANCO AT 0901 WITH FOREGROUND-COLOR CYAN
+           DISPLAY LINHA-BRANCO AT 1001 WITH FOREGROUND-COLOR MAGENTA
+           DISPLAY LINHA-BRANCO AT 1101 WITH FOREGROUND-COLOR YELLOW
+           DISPLAY LINHA-BRANCO AT 1201 WITH FOREGROUND-COLOR RED
+           DISPLAY LINHA-BRANCO AT 1301 WITH FOREGROUND-COLOR GREEN
+           DISPLAY LINHA-BRANCO AT 1401 WITH FOREGROUND-COLOR GREEN
+       .
+      *
+      *=================================================================
+       LIMPA-DADOS.
+       MOVE SPACES TO NOME S-NOME FONE CEP CIDADE UF BAIRRO  RUA
+       .
+

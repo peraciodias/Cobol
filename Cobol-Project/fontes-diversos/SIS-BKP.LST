@@ -1,0 +1,299 @@
+* Microsoft COBOL Version 5.0        L2.4 revision 003 15-May-19 23:50 Page   1
+*                                       SIS-BKP.COB
+* Options: LIST(SIS-BKP.LST) ASMLIST(SIS-BKP.GRP)
+     1 IDENTIFICATION DIVISION.
+     2 PROGRAM-ID.      SISALU.
+     3 AUTHOR.         PERINHA.
+     4 ENVIRONMENT DIVISION.
+     5 CONFIGURATION SECTION.
+     6 SPECIAL-NAMES.
+     7     DECIMAL-POINT IS COMMA.
+     8 INPUT-OUTPUT SECTION.
+     9 FILE-CONTROL.
+    10     SELECT ARQ-ENT ASSIGN TO DISK
+    11            ORGANIZATION IS INDEXED
+    12            ACCESS MODE  IS DYNAMIC
+    13            LOCK MODE    IS AUTOMATIC
+    14            RECORD KEY   IS CODIGO
+    15            FILE STATUS  IS WS-STATUS.
+    16 DATA DIVISION.
+    17 FILE SECTION.
+    18 FD  ARQ-ENT
+    19     LABEL RECORD IS STANDARD
+    20     DATA  RECORD IS REG-DADOS
+    21     VALUE OF FILE-ID "ALUNOS.DAT".
+    22 01  REG-ENT.
+    23     02 CODIGO         PIC 9(08).
+    24     02 NOME           PIC X(20).
+    25     02 S-NOME         PIC X(30).
+    26     02 FONE           PIC X(12).
+    27     02 CEP            PIC X(08).
+    28     02 CIDADE         PIC X(08).
+    29     02 UF             PIC X(02).
+    30     02 BAIRRO         PIC X(32).
+    31     02 RUA            PIC X(55).
+    32
+    33 WORKING-STORAGE SECTION.
+    34*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
+    35*              Color definitions for SCREEN section.
+    36*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
+    37 78  BLACK                  VALUE 0.
+    38 78  BLUE                   VALUE 1.
+    39 78  GREEN                  VALUE 2.
+    40 78  CYAN                   VALUE 3.
+    41 78  RED                    VALUE 4.
+    42 78  MAGENTA                VALUE 5.
+    43 78  YELLOW                 VALUE 6.
+    44 78  WHITE                  VALUE 7.
+    45*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
+    46*    estas cores sao usadas apenas para cor de fundo
+    47*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
+    48*
+    49
+    50 78  BRIGHT-BLACK                     VALUE 8.
+    51 78  BRIGHT-BLUE                      VALUE 9.
+    52 78  BRIGHT-GREEN                     VALUE 10.
+    53 78  BRIGHT-CYAN                      VALUE 11.
+    54 78  BRIGHT-RED                       VALUE 12.
+    55 78  BRIGHT-MAGENTA                   VALUE 13.
+    56 78  BRIGHT-BROWN                     VALUE 14.
+    57 78  BRIGHT-WHITE                     VALUE 15.
+* Microsoft COBOL Version 5.0        L2.4 revision 003 15-May-19 23:50 Page   2
+*                                       SIS-BKP.COB
+    58
+    59 77  WS-STATUS    PIC X(02) VALUE SPACES.
+    60 01  VARIAVEIS-SISTEMA.
+    61     02 WS-LIMPA-NOME   PIC X(20) VALUE SPACES.
+    62     02 WS-LIMPA-S-NOME PIC X(30) VALUE SPACES.
+    63     02 WS-LIMPA-FONE   PIC X(12) VALUE SPACES.
+    64     02 WS-LIMPA-CEP    PIC X(08) VALUE SPACES.
+    65     02 WS-LIMPA-CIDADE PIC X(08) VALUE SPACES.
+    66     02 WS-LIMPA-UF     PIC X(02) VALUE SPACES.
+    67     02 WS-LIMPA-BAIRRO PIC X(02) VALUE SPACES.
+    68     02 WS-LIMPA-RUA    PIC X(02) VALUE SPACES.
+    69
+    70     02 WS-CONT      PIC 9(03) VALUE ZEROS.
+    71     02 ED-CONT      PIC ZZ9.
+    72     02 W-NADA        PIC X     VALUE SPACES.
+    73     02 W-OPCAO      PIC X     VALUE SPACES.
+    74     02 W-MODO-NUM   PIC 9(1)  VALUE 1.
+    75     02 W-MONO-STR   PIC X(10) VALUE "  INCLUIR ".
+    76
+    77 01  WS-DATA.
+    78     02 WS-ANO    PIC 9(02) VALUE ZEROS.
+    79     02 WS-MES    PIC 9(02) VALUE ZEROS.
+    80     02 WS-DIA    PIC 9(02) VALUE ZEROS.
+    81 01  WS-HORA.
+    82     02 WS-HOR    PIC 9(02) VALUE ZEROS.
+    83     02 WS-MIN    PIC 9(02) VALUE ZEROS.
+    84     02 WS-SEG    PIC 9(02) VALUE ZEROS.
+    85     02 WS-CSE    PIC 9(02) VALUE ZEROS.
+    86 LINKAGE SECTION.
+    87 01  LK-VARIAVEIS.
+    88     03 XXXXXX    PIC X(06).
+    89     03 YYYYYY    PIC X(06).
+    90 SCREEN SECTION.
+    91
+    92 01  MENU-MESTRE HIGHLIGHT BACKGROUND-COLOR BLUE.
+    93     02 LINE 3 COL 1 VALUE "(CONSULTA/EXCLUIR=1)(INCLUIR=2)".
+    94     02 LINE 3 COL 33 "(NOTAS=3)(FINANCEIRO=4)(SAIR=5)".
+    95
+    96  01  TELA FOREGROUND-COLOR CYAN.
+    97     02 BLANK SCREEN.
+    98     02 LINE  1 COLUMN  1 VALUE "DATA:".
+    99     02 LINE  1 COLUMN 29 VALUE
+   100- "CADASTRO DE ALUNOS :MODO(            )".
+   101     02 LINE  6 COLUMN 07 VALUE "Codigo............ :".
+   102     02 LINE  7 COLUMN 07 VALUE "Aluno............. :".
+   103     02 LINE  8 COLUMN 07 VALUE "Fone.............. :".
+   104     02 LINE 09 COLUMN 07 VALUE "CEP............... :".
+   105     02 LINE 10 COLUMN 07 VALUE "Cidade ........... :".
+   106     02 LINE 11 COLUMN 07 VALUE "UF................ :".
+   107     02 LINE 12 COLUMN 07 VALUE "Bairro............ :".
+   108     02 LINE 13 COLUMN 07 VALUE "Rua............... :".
+   109     02 LINE 24 COLUMN  1 VALUE "AVISO:".
+   110
+   111
+   112 PROCEDURE DIVISION USING LK-VARIAVEIS.
+   113 010-INICIO.
+   114*     DISPLAY ERASE AT 0101.
+   115
+* Microsoft COBOL Version 5.0        L2.4 revision 003 15-May-19 23:50 Page   3
+*                                       SIS-BKP.COB
+   116     OPEN I-O ARQ-ENT.
+   117     IF WS-STATUS = "00"
+   118        GO TO 011-INICIA-DATAS.
+   119
+   120*     IF WS-STATUS = "05"
+   121*        DISPLAY ERASE AT 0101
+   122*        DISPLAY "Criando arquivo de dados!" AT 2107
+   123*        CLOSE DADOS
+   124*        OPEN OUTPUT DADOS
+   125*        CLOSE DADOS
+   126        GO TO 010-INICIO.
+   127
+   128     DISPLAY "ERRO ao abrir arquivo de dados! " AT 2407.
+   129     ACCEPT  W-NADA AT 2107 WITH PROMPT.
+   130     EXIT PROGRAM.
+   131*
+   132 011-INICIA-DATAS.
+   133
+   134     ACCEPT WS-DATA FROM DATE
+   135     ACCEPT WS-HORA FROM TIME
+   136     DISPLAY "/  /" AT 0108.
+   137     DISPLAY WS-DIA AT 0106.
+   138     DISPLAY WS-MES AT 0109.
+   139     DISPLAY WS-ANO AT 0112.
+   140*
+   141*=================================================================
+   142*
+   143     DISPLAY TELA.
+   144     DISPLAY MENU-MESTRE.
+   145     DISPLAY "/  /" AT 0108.
+   146     DISPLAY WS-DIA AT 0106.
+   147     DISPLAY WS-MES AT 0109.
+   148     DISPLAY WS-ANO AT 0112.
+   149
+   150 030-LIMPA-DADOS.
+   151     DISPLAY WS-LIMPA-NOME AT 0730 WITH FOREGROUND-COLOR WHITE.
+   152     DISPLAY WS-LIMPA-S-NOME AT 0755 WITH FOREGROUND-COLOR WHITE.
+   153     DISPLAY WS-LIMPA-FONE AT 0830 WITH FOREGROUND-COLOR GREEN.
+   154     DISPLAY WS-LIMPA-CEP AT 0930 WITH FOREGROUND-COLOR CYAN.
+   155     DISPLAY WS-LIMPA-BAIRRO AT 1030 WITH FOREGROUND-COLOR RED.
+   156     DISPLAY WS-LIMPA-CIDADE AT 1130 WITH FOREGROUND-COLOR MAGENTA.
+   157     DISPLAY WS-LIMPA-UF AT 1230 WITH FOREGROUND-COLOR YELLOW.
+   158     DISPLAY WS-LIMPA-RUA AT 1330 WITH FOREGROUND-COLOR GREEN.
+   159
+   160
+   161 040-CODIGO.
+   162     ACCEPT  CODIGO AT 0630 WITH PROMPT.
+   163     IF CODIGO = ZEROS
+   164        DISPLAY "Codigo invalido - Redigite" AT 2107
+   165        GO TO 040-CODIGO.
+   166     IF CODIGO = 9999
+   167        GO TO 060-FIM.
+   168*
+   169 040-LEITURA-REGENT.
+   170     READ ARQ-ENT INVALID KEY
+   171          MOVE SPACES TO NOME S-NOME FONE BAIRRO CIDADE UF CEP
+   172               RUA
+   173*          WRITE REG-ENT
+* Microsoft COBOL Version 5.0        L2.4 revision 003 15-May-19 23:50 Page   4
+*                                       SIS-BKP.COB
+   174          GO TO 041-NOME.
+   175     DISPLAY NOME      AT 0730.
+   176     DISPLAY S-NOME    AT 0755.
+   177     DISPLAY FONE      AT 0830.
+   178     DISPLAY CEP       AT 0930.
+   179     DISPLAY CIDADE    AT 1030.
+   180     DISPLAY UF        AT 1130.
+   181     DISPLAY BAIRRO    AT 1230.
+   182     DISPLAY RUA       AT 1330.
+   183
+   184     DISPLAY "Registro encontrado! <C=CONTINUA> " AT 2407.
+   185     ACCEPT  W-NADA AT 1801 WITH PROMPT.
+   186     DISPLAY "                       " AT 2407.
+   187     IF W-NADA = 'C' GO TO 030-LIMPA-DADOS
+   188
+   189 041-MYNOME.
+*  83-S***********                                                     (   0)**
+**    Reserved word missing - DEPENDING expected.
+   190     ACCEPT  NOME AT 0430 WITH PROMPT
+   191     IF NOME = SPACES
+   192        DISPLAY "Nome NOME em branco - Redigite" AT 2407
+   193        GO TO 041-MYNOME
+   194 044-RUA.
+*  83-S********                                                        (   4)**
+**    Reserved word missing - DEPENDING expected.
+   195     ACCEPT  RUA AT 1130 WITH PROMPT
+   196     IF RUA = SPACES
+   197        DISPLAY "Rua em branco - Redigite" AT 2407
+   198        GO TO 044-RUA
+   199 045-BAIRRO.
+*  83-S***********                                                     (   4)**
+**    Reserved word missing - DEPENDING expected.
+   200     ACCEPT  BAIRRO AT 0830 WITH PROMPT
+   201     IF BAIRRO = SPACES
+   202        DISPLAY "Bairro em branco - Redigite" AT 2407
+   203        GO TO 045-BAIRRO
+   204 046-CIDADE.
+*  83-S***********                                                     (   4)**
+**    Reserved word missing - DEPENDING expected.
+   205     ACCEPT  CIDADE AT 0930 WITH PROMPT
+   206     IF CIDADE = SPACES
+   207        DISPLAY "Cidade em branco - Redigite" AT 2407
+   208        GO TO 046-CIDADE
+   209 047-UF.
+*  83-S*******                                                         (   4)**
+**    Reserved word missing - DEPENDING expected.
+   210     ACCEPT  UF AT 1030 WITH PROMPT
+   211     IF UF = SPACES
+   212        DISPLAY "UF em branco - Redigite" AT 2407
+   213        GO TO 047-UF
+   214 048-CEP.
+*  83-S********                                                        (   4)**
+**    Reserved word missing - DEPENDING expected.
+   215     ACCEPT  CEP AT 1130 WITH PROMPT
+   216     IF CEP = SPACES
+   217        DISPLAY "CEP em branco - Redigite" AT 2407
+   218        GO TO 048-CEP
+   219 049-FONE.
+* Microsoft COBOL Version 5.0        L2.4 revision 003 15-May-19 23:50 Page   5
+*                                       SIS-BKP.COB
+*  83-S*********                                                       (   4)**
+**    Reserved word missing - DEPENDING expected.
+   220     ACCEPT  FONE AT 1230 WITH PROMPT
+   221     IF FONE = SPACES
+   222        DISPLAY "FONE em branco - Redigite" AT 2407
+   223        GO TO 049-FONE.
+   224*=========================================================================
+   225*    FINALIZA AQUI O PROGRAMA
+   226     CLOSE ARQ-ENT.
+   227     STOP RUN.
+   228*    FINALIZA AQUI O PROGRAMA
+   229*=========================================================================
+   230 050-GRAVAR.
+   231*     REWRITE REG-ENT.
+   232     GO TO 030-LIMPA-DADOS.
+   233
+   234 060-FIM.
+   235     DISPLAY AT 0101 ERASE.
+   236     DISPLAY "Fim do Programa!" AT 1530.
+   237     CLOSE ARQ-ENT.
+   238     EXIT PROGRAM.
+   239*** --------- FIM DO PROGRAMA CLI001 --------- ***
+*      041-NOME
+* 348-S********                                                        (   4)**
+**    Procedure name 041-NOME undeclared, first used on line 174
+*      041-MYNOME
+* 348-S**********                                                      (   5)**
+**    Procedure name 041-MYNOME undeclared, first used on line 189
+*      044-RUA
+* 348-S*******                                                         (   5)**
+**    Procedure name 044-RUA undeclared, first used on line 194
+*      045-BAIRRO
+* 348-S**********                                                      (   5)**
+**    Procedure name 045-BAIRRO undeclared, first used on line 199
+*      046-CIDADE
+* 348-S**********                                                      (   5)**
+**    Procedure name 046-CIDADE undeclared, first used on line 204
+*      047-UF
+* 348-S******                                                          (   5)**
+**    Procedure name 047-UF undeclared, first used on line 209
+*      048-CEP
+* 348-S*******                                                         (   5)**
+**    Procedure name 048-CEP undeclared, first used on line 214
+*      049-FONE
+* 348-S********                                                        (   5)**
+**    Procedure name 049-FONE undeclared, first used on line 219
+* Microsoft COBOL Version 5.0        L2.4 revision 003
+* (C)Copyright Microsoft Corp 1984, 1993       URN AXUPA/ZZ0/00001
+*                                              REF GNB-029052003A8
+*
+* Last message on page:  5
+*
+* Total Messages:    15
+* Unrecoverable :     0                    Severe  :    15
+* Errors        :     0                    Warnings:     0
+* Informational :     0                    Flags   :     0
+* Data:        1404     Code:        1479

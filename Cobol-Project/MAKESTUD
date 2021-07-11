@@ -1,0 +1,68 @@
+      ******************************************************************
+      *OPEN LINE SEQUENTIAL(NAMES  LAST-LAMES)
+      *GENERATES A NEW FILE [RECOUT] WITH THE FOLLOWING DATA
+      * [STUDENT CODE] CREATED IN [REC-OUT-RG]
+      * [STUDENT  NAME ]  PLACED  IN REC-OUT-NAME
+      * [STUDENT  LAST NAME ] PLACED IN REC-OUT-LNAME
+      *observe que o programa cria uma lista de nomes FICTICIO
+      ******************************************************************
+
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. MAKESTUD.
+       AUTHOR. PERACIO.DIAS@GMAIL.COM.
+       ENVIRONMENT DIVISION.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+              SELECT PRINT-LINE ASSIGN TO PRTLINE.
+              SELECT FILE-OUT ASSIGN TO RECOUT
+              ORGANIZATION IS SEQUENTIAL.
+       DATA DIVISION.
+       FILE SECTION.
+       FD PRINT-LINE RECORDING MODE F.
+       01 REC-PRINT.
+           05 PRINT-RG              PIC 9(08).
+           05 PRINT-NAME            PIC X(20).
+           05 PRINT-LNAME           PIC X(30).
+       FD FILE-OUT RECORDING MODE F.
+       01 RECORD-OUT.
+           05 FIELD-RG               PIC 9(08).
+           05 FIELD-NAME             PIC X(20).
+           05 FIELD-LNAME            PIC X(30).
+           05 FIELD-RESEVE           PIC X(112) VALUE SPACES.
+       WORKING-STORAGE SECTION.
+       01 LINE-REC-IN               PIC X(50).
+       01  WS-REC.
+           05 WS-NAME               PIC X(20).
+           05 WS-LNAME              PIC X(30).
+
+       01  WS-COUNTER-RG            PIC 9(08) VALUE 20201111.
+      * WS-COUNTER REC => START GENERIC STUDENT CODE,
+      *  WITH YEAR 2020 + 1111 DIGITS AUTOMATICALLY GENERATED
+       PROCEDURE DIVISION.
+           OPEN OUTPUT PRINT-LINE.
+           OPEN OUTPUT FILE-OUT.
+               PERFORM 155 TIMES
+               PERFORM READ-STREAMER-NAME
+                  MOVE LINE-REC-IN TO WS-REC
+                  ADD 1 TO WS-COUNTER-RG
+               PERFORM WRITE-RECORDS
+               PERFORM WRITE-FILE-OUT
+               END-PERFORM.
+           CLOSE PRINT-LINE.
+           CLOSE FILE-OUT.
+           STOP RUN.
+      *
+       READ-STREAMER-NAME.
+           ACCEPT LINE-REC-IN.
+      *
+       WRITE-RECORDS.
+           MOVE WS-NAME       TO PRINT-NAME
+           MOVE WS-LNAME      TO PRINT-LNAME
+           MOVE WS-COUNTER-RG TO PRINT-RG
+           WRITE REC-PRINT.
+      *
+       WRITE-FILE-OUT.
+           MOVE WS-COUNTER-RG  TO FIELD-RG
+           MOVE WS-NAME        TO FIELD-NAME
+           MOVE WS-LNAME       TO FIELD-LNAME
+           WRITE RECORD-OUT.

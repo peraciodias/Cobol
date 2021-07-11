@@ -1,0 +1,31 @@
+* Microsoft COBOL Version 5.0        L2.4 revision 003 14-May-19 21:43 Page   1
+*                                        RANDOM.COB
+* Options: LIST(RANDOM.LST) ASMLIST(RANDOM.GRP)
+     1 IDENTIFICATION DIVISION.
+     2 PROGRAM-ID. RANDOMIZA.
+     3 DATA DIVISION.
+     4 WORKING-STORAGE SECTION.
+     5 01  RND-NUM PIC 99V999.
+     6 77  RND-REAL PIC 9(02).
+     7 01  HORARIO PIC 9(08).
+     8 01  HORA REDEFINES HORARIO.
+     9 02  HH  PIC 99.
+    10 02  HM  PIC 99.
+    11 02  HS  PIC 99.
+    12 02  HX  PIC 99.
+    13 01  NUMERO PIC 9(6).
+    14 PROCEDURE DIVISION.
+    15 INICIO.
+    16*NESTE EXEMPLO ESTOU GERANDO 10 NÚMEROS ALEATÓRIOS"
+    17      ACCEPT HORARIO FROM TIME
+    18      COMPUTE NUMERO = (HH * HX) / HM + HS
+    19      COMPUTE RND-NUM = FUNCTION RANDOM
+    20      COMPUTE RND-REAL = RND-NUM *(NUMERO)
+    21      DISPLAY RND-REAL
+    22 STOP RUN.
+* Microsoft COBOL Version 5.0        L2.4 revision 003
+* (C)Copyright Microsoft Corp 1984, 1993       URN AXUPA/ZZ0/00001
+*                                              REF GNB-029052003A8
+*
+* Total Messages:     0
+* Data:         444     Code:         109

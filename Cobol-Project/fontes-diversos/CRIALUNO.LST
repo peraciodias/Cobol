@@ -1,0 +1,113 @@
+* Microsoft COBOL Version 4.5        L2.4 revision 002 12-May-19 19:39 Page   1
+*                                     CRIALUNO.COB
+* Options: LIST(CRIALUNO.LST) ASMLIST(CRIALUNO.GRP)
+     1 IDENTIFICATION DIVISION.
+     2 PROGRAM-ID. CRIALUNO.
+     3 ENVIRONMENT DIVISION.
+     4 CONFIGURATION SECTION.
+     5 SPECIAL-NAMES.
+     6     DECIMAL-POINT IS COMMA.
+     7 INPUT-OUTPUT SECTION.
+     8 FILE-CONTROL.
+     9 SELECT ARQ-ENT ASSIGN TO 'F:\COBOL45\SOURCE\CADALUNO.TXT'
+    10        ORGANIZATION IS LINE SEQUENTIAL.
+    11 SELECT ARQ-SAI ASSIGN TO 'F:\COBOL45\SOURCE\ALUNOS.DAT'
+    12        ORGANIZATION IS INDEXED
+    13        ACCESS IS DYNAMIC
+    14        RECORD KEY IS CODIGO
+    15        FILE STATUS IS FS-STAT.
+    16 DATA DIVISION.
+    17 FILE SECTION.
+    18 FD  ARQ-ENT.
+    19 01  REG-ENT.
+    20     02 CODIGO-ENT         PIC 9(08).
+    21     02 NOME-ENT           PIC X(20).
+    22     02 S-NOME-ENT         PIC X(30).
+    23     02 FONE-ENT           PIC X(12).
+    24     02 CEP-ENT            PIC X(08).
+    25     02 CIDADE-ENT         PIC X(08).
+    26     02 UF-ENT             PIC X(02).
+    27     02 BAIRRO-ENT         PIC X(32).
+    28     02 RUA-ENT            PIC X(55).
+    29     02 FILLER             PIC X(3).
+    30 FD  ARQ-SAI.
+    31 01  REG-SAI.
+    32     02 CODIGO         PIC 9(08).
+    33     02 NOME           PIC X(20).
+    34     02 S-NOME         PIC X(30).
+    35     02 FONE           PIC X(12).
+    36     02 CEP            PIC X(08).
+    37     02 CIDADE         PIC X(08).
+    38     02 UF             PIC X(02).
+    39     02 BAIRRO         PIC X(32).
+    40     02 RUA            PIC X(55).
+    41
+    42 WORKING-STORAGE SECTION.
+    43 01  WS-REG-ENT.
+    44     02 WS-CODIGO    PIC 9(08).
+    45     02 WS-NOME      PIC X(20).
+    46     02 WS-S-NOME    PIC X(30).
+    47     02 WS-FONE      PIC X(12).
+    48     02 WS-CEP       PIC X(08).
+    49     02 WS-CIDADE    PIC X(08).
+    50     02 WS-UF        PIC X(02).
+    51     02 WS-BAIRRO    PIC X(32).
+    52     02 WS-RUA       PIC X(55).
+    53
+    54 01  WS-EOF PIC A(1).
+    55 01  WS-STP PIC X(2).
+    56 01  WS-CONTA-REG PIC 9(09) VALUE ZEROES.
+    57 77 FS-STAT PIC 9(02).
+* Microsoft COBOL Version 4.5        L2.4 revision 002 12-May-19 19:39 Page   2
+*                                     CRIALUNO.COB
+    58     88 FS-OK         VALUE ZEROS.
+    59     88 FS-NAO-EXISTE VALUE 35.
+    60 PROCEDURE DIVISION.
+    61* inicia um loop ate que ENCONTRE FIM DO ARQUIVO='Y'
+    62 PERFORM ABRE-ARQUIVOS.
+    63 PERFORM UNTIL WS-EOF = 'Y'
+    64     READ ARQ-ENT INTO WS-REG-ENT
+    65         AT END MOVE 'Y' TO WS-EOF
+    66     END-READ
+    67     MOVE WS-REG-ENT TO REG-SAI
+    68     PERFORM MOSTRA
+    69     WRITE REG-SAI
+    70     PERFORM MOSTRA
+    71 END-PERFORM.
+    72 CLOSE ARQ-ENT.
+    73 CLOSE ARQ-SAI.
+    74 STOP RUN.
+    75*
+    76*============================================================
+    77*
+    78 MOSTRA.
+    79 DISPLAY '-----------------------------------------------------'
+    80 DISPLAY  'CODIGO:' WS-CODIGO
+    81 DISPLAY  'NOME..:' WS-NOME
+    82 DISPLAY  'S.NOME:' WS-S-NOME
+    83 DISPLAY  'FONE..:' WS-FONE
+    84 DISPLAY  'CIDADE:' WS-CIDADE
+    85 DISPLAY  'UF....:' WS-UF
+    86 DISPLAY  'CEP...:' WS-CEP
+    87 DISPLAY  'RUA...:' WS-RUA
+    88 DISPLAY  'BAIRRO:' WS-BAIRRO
+    89 .
+    90 ABRE-ARQUIVOS.
+    91     OPEN OUTPUT ARQ-SAI
+    92     IF FS-NAO-EXISTE THEN
+    93         DISPLAY 'CRIANDO NOVO ARQUIVO ...'
+    94         CLOSE ARQ-SAI
+    95         OPEN I-O ARQ-SAI
+    96     END-IF
+    97     OPEN INPUT ARQ-ENT
+    98     IF FS-NAO-EXISTE THEN
+    99         DISPLAY 'UM ARQUIVO DE ENTRADA Nao FOI ENCONTRADO....'
+   100         CLOSE ARQ-ENT
+   101         STOP RUN
+   102     END-IF.
+* Microsoft COBOL Version 4.5        L2.4 revision 002
+* (C)Copyright Microsoft Corp 1984, 1991       URN AXUPA/MS0/000000
+*                                              REF GNB-024050002A7
+*
+* Total Messages:     0
+* Data:        1496     Code:         592     Dictionary:        1954

@@ -1,0 +1,330 @@
+* Microsoft COBOL Code Generator         LEMENSA.OBJ                  Page 0001
+* Address        Code
+*
+    C01E01:
+00000000   5B                     POP     BX
+00000001   81C30000               ADD     BX,OFFSET C01E01
+00000005   3BD8                   CMP     BX,AX
+00000007   7515                   JNE     001Eh
+00000009   5A                     POP     DX
+0000000A   59                     POP     CX
+0000000B   3A6E25                 CMP     CH,[BP+25h]
+0000000E   750C                   JNE     001Ch
+00000010   3A4E25                 CMP     CL,[BP+25h]
+00000013   7502                   JNE     0017h
+00000015   FFE2                   JMP     DX
+00000017   8AC1                   MOV     AL,CL
+00000019   E90420                 JMP     2020h
+0000001C   51                     PUSH    CX
+0000001D   52                     PUSH    DX
+0000001E   81EB0000               SUB     BX,OFFSET C01E01
+00000022   53                     PUSH    BX
+00000023   BB0000                 MOV     BX,0000h
+00000026   53                     PUSH    BX
+00000027   FFE0                   JMP     AX
+00000029   1E                     PUSH    DS
+0000002A   56                     PUSH    SI
+0000002B   57                     PUSH    DI
+0000002C   B80000                 MOV     AX,0000h
+0000002F   50                     PUSH    AX
+00000030   B80000                 MOV     AX,0000h
+00000033   50                     PUSH    AX
+00000034   BB0000                 MOV     BX,0000h
+00000037   53                     PUSH    BX
+00000038   81EC6400               SUB     SP,0064h
+0000003C   55                     PUSH    BP
+0000003D   89E5                   MOV     BP,SP
+0000003F   81EC2800               SUB     SP,0028h
+00000043   B80000                 MOV     AX,0000h
+00000046   8ED8                   MOV     DS,AX
+00000048   8CCB                   MOV     BX,CS
+0000004A   BAAF00                 MOV     DX,00AFh
+0000004D   9A00000000             CALL    _MAKEENV
+00000052   B80000                 MOV     AX,0000h
+00000055   8ED8                   MOV     DS,AX
+00000057   B80000                 MOV     AX,OFFSET Lpt
+0000005A   B220                   MOV     DL,20h
+0000005C   9A00000000             CALL    _INITDAT
+00000061   B80000                 MOV     AX,0000h
+00000064   50                     PUSH    AX
+00000065   B80000                 MOV     AX,OFFSET C01E01
+00000068   50                     PUSH    AX
+00000069   E94C00                 JMP     D005E
+0000006C   1E                     PUSH    DS
+0000006D   56                     PUSH    SI
+0000006E   57                     PUSH    DI
+0000006F   B80000                 MOV     AX,0000h
+00000072   50                     PUSH    AX
+00000073   B80000                 MOV     AX,0000h
+00000076   50                     PUSH    AX
+00000077   BB0000                 MOV     BX,0000h
+* Microsoft COBOL Code Generator         LEMENSA.OBJ                  Page 0002
+* Address        Code
+0000007A   53                     PUSH    BX
+0000007B   81EC6400               SUB     SP,0064h
+0000007F   55                     PUSH    BP
+00000080   89E5                   MOV     BP,SP
+00000082   81EC2800               SUB     SP,0028h
+00000086   B80000                 MOV     AX,0000h
+00000089   8ED8                   MOV     DS,AX
+0000008B   8CCB                   MOV     BX,CS
+0000008D   BAAF00                 MOV     DX,00AFh
+00000090   9A00000000             CALL    _MAKEENV
+00000095   B80000                 MOV     AX,0000h
+00000098   8ED8                   MOV     DS,AX
+0000009A   B80000                 MOV     AX,OFFSET Lpt
+0000009D   B220                   MOV     DL,20h
+0000009F   9A00000000             CALL    _INITDAT
+000000A4   B80000                 MOV     AX,0000h
+000000A7   50                     PUSH    AX
+000000A8   B80000                 MOV     AX,OFFSET C01E01
+000000AB   50                     PUSH    AX
+000000AC   E97D02                 JMP     D06FB
+   D001A:
+*
+000000AF   4C454D454E53412020                     [LEMENSA         ]
+    ; Entry LEMENSA:
+    D005E:
+000000B8   8E5E68                 MOV     DS,[BP+68h]
+000000BB   8E4668                 MOV     ES,[BP+68h]
+000000BE   EB37                   JMP     D01EB
+   D00D6:
+000000C0   803E3C03FF             CMP     DS:BYTE PTR [033Ch],0FFh
+000000C5   742C                   JE      D0158
+000000C7   8CDA                   MOV     DX,DS
+000000C9   BE0002                 MOV     SI,0200h
+000000CC   BF9C01                 MOV     DI,019Ch
+000000CF   9A00000000             CALL    _SETPTR
+000000D4   8CDA                   MOV     DX,DS
+000000D6   BE4802                 MOV     SI,0248h
+000000D9   BF9801                 MOV     DI,0198h
+000000DC   9A00000000             CALL    _SETPTR
+000000E1   8CDA                   MOV     DX,DS
+000000E3   BED801                 MOV     SI,01D8h
+000000E6   BFA001                 MOV     DI,01A0h
+000000E9   9A00000000             CALL    _SETPTR
+000000EE   C6063C03FF             MOV     DS:BYTE PTR [033Ch],0FFh
+   D0158:
+000000F3   B8F700                 MOV     AX,OFFSET D0186
+000000F6   C3                     RET
+   D0186:
+   D01EB:
+000000F7   E8C6FF                 CALL    D00D6
+000000FA   E8B401                 CALL    D054D
+000000FD   BE7003                 MOV     SI,0370h
+00000100   BF4802                 MOV     DI,0248h
+00000103   A5                     MOVSW
+00000104   A5                     MOVSW
+00000105   A5                     MOVSW
+00000106   A5                     MOVSW
+00000107   C70694010000           MOV     DS:WORD PTR [0194h],0000h
+* Microsoft COBOL Code Generator         LEMENSA.OBJ                  Page 0003
+* Address        Code
+0000010D   C6067A0100             MOV     DS:BYTE PTR [017Ah],00h
+00000112   B0F6                   MOV     AL,0F6h
+00000114   BE6001                 MOV     SI,0160h
+00000117   9A00000000             CALL    _FILE
+0000011C   A16001                 MOV     AX,DS:[0160h]
+0000011F   A33803                 MOV     DS:[0338h],AX
+00000122   80F830                 CMP     AL,30h
+00000125   8E4668                 MOV     ES,[BP+68h]
+00000128   750B                   JNE     D02C1
+0000012A   B93800                 MOV     CX,0038h
+0000012D   BE4802                 MOV     SI,0248h
+00000130   BFC002                 MOV     DI,02C0h
+00000133   F3A5           REP     MOVSW
+   D02C1:
+00000135   A06001                 MOV     AL,DS:[0160h]
+00000138   80F833                 CMP     AL,33h
+0000013B   7203                   JB      D02F3
+0000013D   E94601                 JMP     D04F5
+   D02F3:
+00000140   80F832                 CMP     AL,32h
+00000143   7513                   JNE     D033F
+00000145   31DB                   XOR     BX,BX
+00000147   B91000                 MOV     CX,0010h
+0000014A   BE7803                 MOV     SI,0378h
+0000014D   9A00000000             CALL    _DISPLAY
+00000152   8E4668                 MOV     ES,[BP+68h]
+00000155   E92B01                 JMP     D04D2
+   D033F:
+00000158   31DB                   XOR     BX,BX
+0000015A   B90900                 MOV     CX,0009h
+0000015D   BE8803                 MOV     SI,0388h
+00000160   9A00000000             CALL    _DISNOCR
+00000165   31DB                   XOR     BX,BX
+00000167   B90800                 MOV     CX,0008h
+0000016A   BEC002                 MOV     SI,02C0h
+0000016D   9A00000000             CALL    _DISPLAY
+00000172   31DB                   XOR     BX,BX
+00000174   B90900                 MOV     CX,0009h
+00000177   BE9103                 MOV     SI,0391h
+0000017A   9A00000000             CALL    _DISNOCR
+0000017F   31DB                   XOR     BX,BX
+00000181   B91400                 MOV     CX,0014h
+00000184   BEC802                 MOV     SI,02C8h
+00000187   9A00000000             CALL    _DISPLAY
+0000018C   31DB                   XOR     BX,BX
+0000018E   B90900                 MOV     CX,0009h
+00000191   BE9A03                 MOV     SI,039Ah
+00000194   9A00000000             CALL    _DISNOCR
+00000199   31DB                   XOR     BX,BX
+0000019B   B91E00                 MOV     CX,001Eh
+0000019E   BEDC02                 MOV     SI,02DCh
+000001A1   9A00000000             CALL    _DISPLAY
+000001A6   31DB                   XOR     BX,BX
+000001A8   B90900                 MOV     CX,0009h
+000001AB   BEA303                 MOV     SI,03A3h
+000001AE   9A00000000             CALL    _DISNOCR
+000001B3   31DB                   XOR     BX,BX
+000001B5   B90400                 MOV     CX,0004h
+* Microsoft COBOL Code Generator         LEMENSA.OBJ                  Page 0004
+* Address        Code
+000001B8   BEFA02                 MOV     SI,02FAh
+000001BB   9A00000000             CALL    _DISPLAY
+000001C0   31DB                   XOR     BX,BX
+000001C2   B90900                 MOV     CX,0009h
+000001C5   BEAC03                 MOV     SI,03ACh
+000001C8   9A00000000             CALL    _DISNOCR
+000001CD   31DB                   XOR     BX,BX
+000001CF   B90600                 MOV     CX,0006h
+000001D2   BEFE02                 MOV     SI,02FEh
+000001D5   9A00000000             CALL    _DISPLAY
+000001DA   31DB                   XOR     BX,BX
+000001DC   B90900                 MOV     CX,0009h
+000001DF   BE0403                 MOV     SI,0304h
+000001E2   9A00000000             CALL    _DISPLAY
+000001E7   31DB                   XOR     BX,BX
+000001E9   B90900                 MOV     CX,0009h
+000001EC   BEB503                 MOV     SI,03B5h
+000001EF   9A00000000             CALL    _DISNOCR
+000001F4   31DB                   XOR     BX,BX
+000001F6   B90200                 MOV     CX,0002h
+000001F9   BE0D03                 MOV     SI,030Dh
+000001FC   9A00000000             CALL    _DISPLAY
+00000201   31DB                   XOR     BX,BX
+00000203   B90900                 MOV     CX,0009h
+00000206   BE0F03                 MOV     SI,030Fh
+00000209   9A00000000             CALL    _DISPLAY
+0000020E   31DB                   XOR     BX,BX
+00000210   B90900                 MOV     CX,0009h
+00000213   BEB503                 MOV     SI,03B5h
+00000216   9A00000000             CALL    _DISNOCR
+0000021B   31DB                   XOR     BX,BX
+0000021D   B90200                 MOV     CX,0002h
+00000220   BE1803                 MOV     SI,0318h
+00000223   9A00000000             CALL    _DISPLAY
+00000228   31DB                   XOR     BX,BX
+0000022A   B90900                 MOV     CX,0009h
+0000022D   BE1A03                 MOV     SI,031Ah
+00000230   9A00000000             CALL    _DISPLAY
+00000235   31DB                   XOR     BX,BX
+00000237   B90900                 MOV     CX,0009h
+0000023A   BEBE03                 MOV     SI,03BEh
+0000023D   9A00000000             CALL    _DISNOCR
+00000242   31DB                   XOR     BX,BX
+00000244   B90200                 MOV     CX,0002h
+00000247   BE2303                 MOV     SI,0323h
+0000024A   9A00000000             CALL    _DISPLAY
+0000024F   31DB                   XOR     BX,BX
+00000251   B90900                 MOV     CX,0009h
+00000254   BE2503                 MOV     SI,0325h
+00000257   9A00000000             CALL    _DISPLAY
+0000025C   31DB                   XOR     BX,BX
+0000025E   B90900                 MOV     CX,0009h
+00000261   BEB503                 MOV     SI,03B5h
+00000264   9A00000000             CALL    _DISNOCR
+00000269   31DB                   XOR     BX,BX
+0000026B   B90200                 MOV     CX,0002h
+0000026E   BE2E03                 MOV     SI,032Eh
+00000271   9A00000000             CALL    _DISPLAY
+* Microsoft COBOL Code Generator         LEMENSA.OBJ                  Page 0005
+* Address        Code
+00000276   31DB                   XOR     BX,BX
+00000278   B92900                 MOV     CX,0029h
+0000027B   BEC703                 MOV     SI,03C7h
+0000027E   9A00000000             CALL    _DISPLAY
+   D04D2:
+00000283   8E4668                 MOV     ES,[BP+68h]
+   D04F5:
+00000286   B080                   MOV     AL,80h
+00000288   BE6001                 MOV     SI,0160h
+0000028B   9A00000000             CALL    _FILE
+00000290   A16001                 MOV     AX,DS:[0160h]
+00000293   A33803                 MOV     DS:[0338h],AX
+00000296   31D2                   XOR     DX,DX
+00000298   A14003                 MOV     AX,DS:[0340h]
+0000029B   86C4                   XCHG    AL,AH
+0000029D   9A00000000             CALL    _STOPRUN
+000002A2   31D2                   XOR     DX,DX
+000002A4   A14003                 MOV     AX,DS:[0340h]
+000002A7   86C4                   XCHG    AL,AH
+000002A9   BB0200                 MOV     BX,0002h
+000002AC   9A00000000             CALL    _EXITPRG
+   D054D:
+000002B1   C606780100             MOV     DS:BYTE PTR [0178h],00h
+000002B6   B000                   MOV     AL,00h
+000002B8   BE6001                 MOV     SI,0160h
+000002BB   9A00000000             CALL    _FILE
+000002C0   A16001                 MOV     AX,DS:[0160h]
+000002C3   A33803                 MOV     DS:[0338h],AX
+000002C6   81F83335               CMP     AX,3533h
+000002CA   8E4668                 MOV     ES,[BP+68h]
+000002CD   7529                   JNE     D05D6
+000002CF   31DB                   XOR     BX,BX
+000002D1   B92C00                 MOV     CX,002Ch
+000002D4   BEF003                 MOV     SI,03F0h
+000002D7   9A00000000             CALL    _DISPLAY
+000002DC   B080                   MOV     AL,80h
+000002DE   BE6001                 MOV     SI,0160h
+000002E1   9A00000000             CALL    _FILE
+000002E6   A16001                 MOV     AX,DS:[0160h]
+000002E9   A33803                 MOV     DS:[0338h],AX
+000002EC   31D2                   XOR     DX,DX
+000002EE   A14003                 MOV     AX,DS:[0340h]
+000002F1   86C4                   XCHG    AL,AH
+000002F3   9A00000000             CALL    _STOPRUN
+   D05D6:
+000002F8   B8FC02                 MOV     AX,OFFSET D0604
+000002FB   C3                     RET
+   D0604:
+000002FC   31D2                   XOR     DX,DX
+000002FE   A14003                 MOV     AX,DS:[0340h]
+00000301   86C4                   XCHG    AL,AH
+00000303   BB0200                 MOV     BX,0002h
+00000306   9A00000000             CALL    _EXITPRG
+0000030B   9A00000000             CALL    _STOPRUN
+   D0653:
+00000310   803E670180             CMP     DS:BYTE PTR [0167h],80h
+00000315   730A                   JAE     D069C
+00000317   B080                   MOV     AL,80h
+* Microsoft COBOL Code Generator         LEMENSA.OBJ                  Page 0006
+* Address        Code
+00000319   BE6001                 MOV     SI,0160h
+0000031C   9A00000000             CALL    _FILE
+   D069C:
+00000321   8E4668                 MOV     ES,[BP+68h]
+00000324   B82803                 MOV     AX,OFFSET D06BF
+00000327   C3                     RET
+   D06BF:
+00000328   B82C03                 MOV     AX,OFFSET D06DD
+0000032B   C3                     RET
+   D06DD:
+    ; Entry CANCEL:
+    D06FB:
+0000032C   8E5E68                 MOV     DS,[BP+68h]
+0000032F   8E4668                 MOV     ES,[BP+68h]
+00000332   E8DBFF                 CALL    D0653
+00000335   31D2                   XOR     DX,DX
+00000337   A14003                 MOV     AX,DS:[0340h]
+0000033A   86C4                   XCHG    AL,AH
+0000033C   BB0200                 MOV     BX,0002h
+0000033F   9A00000000             CALL    _EXITPRG
+*
+* Data = 000001052 Code = 000000836
+*
+*
+* Microsoft COBOL Code Generator                 Version 5.0
+* (C)Copyright Microsoft Corp 1984, 1993               URN  AXUPA/ZZ0/00001
+* Native Code Generator                        REF GB04.04.14   I86
+

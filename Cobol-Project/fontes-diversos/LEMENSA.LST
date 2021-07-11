@@ -1,0 +1,115 @@
+* Microsoft COBOL Version 5.0        L2.4 revision 003 24-May-19 16:54 Page   1
+*                                       LEMENSA.COB
+* Options: LIST(LEMENSA.LST) ASMLIST(LEMENSA.GRP)
+     1 IDENTIFICATION DIVISION.
+     2 PROGRAM-ID.    LEMENSA.
+     3 AUTHOR.        PERINHA.
+     4 ENVIRONMENT DIVISION.
+     5 CONFIGURATION SECTION.
+     6 SPECIAL-NAMES.
+     7     DECIMAL-POINT IS COMMA.
+     8 INPUT-OUTPUT SECTION.
+     9 FILE-CONTROL.
+    10
+    11 SELECT ARQ-ENT0
+    12        ASSIGN TO DISK
+    13        ORGANIZATION IS INDEXED
+    14        ACCESS MODE  IS DYNAMIC
+    15        RECORD KEY IS CODIGO
+    16        FILE STATUS IS FS-STAT.
+    17 DATA DIVISION.
+    18 FILE SECTION.
+    19 FD ARQ-ENT0
+    20     LABEL RECORD IS STANDARD
+    21     DATA  RECORD IS REG-ENT
+    22     VALUE OF FILE-ID "MENSAL.DAT".
+    23
+    24 01 REG-ENT0.
+    25     02 CODIGO         PIC 9(08).
+    26     02 NOME           PIC A(20).
+    27     02 S-NOME         PIC A(30).
+    28     02 ANO-REF        PIC 9(04).
+    29     02 VAL-PARCELA    PIC ZZZ.Z9.
+    30     02 MENSA-1.
+    31        03 MES-REF-1   PIC  A(9).
+    32        03 SITU-1      PIC A(02).
+    33     02 MENSA-2.
+    34        03 MES-REF-2   PIC  A(9).
+    35        03 SITU-2      PIC A(02).
+    36     02 MENSA-3.
+    37        03 MES-REF-3   PIC  A(9).
+    38        03 SITU-3      PIC A(02).
+    39     02 MENSA-4.
+    40        03 MES-REF-4   PIC  A(9).
+    41        03 SITU-4      PIC A(02).
+    42
+    43 WORKING-STORAGE SECTION.
+    44 01 WS-REG-ENT0.
+    45     02 WS-CODIGO         PIC 9(08).
+    46     02 WS-NOME           PIC A(20).
+    47     02 WS-S-NOME         PIC A(30).
+    48     02 WS-ANO-REF        PIC 9(04).
+    49     02 WS-VAL-PARCELA    PIC ZZZ.Z9.
+    50     02 MENSA-1-ENT.
+    51        03 WS-MES-REF1      PIC A(9).
+    52        03 WS-SITU-1       PIC A(02).
+    53     02 MENSA-2-ENT.
+    54        03 WS-MES-REF2      PIC A(9).
+    55        03 WS-SITU-2       PIC A(02).
+    56     02 MENSA-3-ENT.
+    57        03 WS-MES-REF3      PIC A(9).
+* Microsoft COBOL Version 5.0        L2.4 revision 003 24-May-19 16:54 Page   2
+*                                       LEMENSA.COB
+    58        03 WS-SITU-3       PIC A(02).
+    59     02 MENSA-4-ENT.
+    60        03 WS-MES-REF4      PIC A(9).
+    61        03 WS-SITU-4       PIC A(02).
+    62
+    63 01  WS-EOF PIC A(1).
+    64 77 FS-STAT PIC 9(02).
+    65     88 FS-OK         VALUE ZEROS.
+    66     88 FS-NAO-EXISTE VALUE 35.
+    67 PROCEDURE DIVISION.
+    68 PERFORM ABRIR-ARQUIVOS.
+    69* inicia um loop ate que WS-EOF SEJA='Y' quando finaliza o loop
+    70* PERFORM UNTIL WS-EOF = 'Y'
+    71 MOVE 20190152 TO CODIGO.
+    72 READ ARQ-ENT0 RECORD INTO WS-REG-ENT0
+    73      KEY IS CODIGO
+    74        INVALID KEY  DISPLAY "CHAVE INVALIDA !"
+    75*        AT END MOVE 'Y' TO WS-EOF
+    76        NOT INVALID KEY
+    77        DISPLAY 'CODIGO..:' WS-CODIGO
+    78        DISPLAY 'NOME....:' WS-NOME
+    79        DISPLAY 'S-SNOME.:' WS-S-NOME
+    80        DISPLAY 'ANO REF.:' WS-ANO-REF
+    81        DISPLAY 'VALOR...:' WS-VAL-PARCELA
+    82        DISPLAY WS-MES-REF1
+    83        DISPLAY 'SITUACAO:' WS-SITU-1
+    84        DISPLAY WS-MES-REF2
+    85        DISPLAY 'SITUACAO:' WS-SITU-2
+    86        DISPLAY WS-MES-REF3
+    87        DISPLAY 'SUTUACAO:' WS-SITU-3
+    88        DISPLAY WS-MES-REF4
+    89        DISPLAY 'SITUACAO:' WS-SITU-4
+    90        DISPLAY '-----------------------------------------'
+    91        END-READ
+    92*END-PERFORM.
+    93 CLOSE ARQ-ENT0.
+    94 STOP RUN.
+    95 EXIT PROGRAM.
+    96 ABRIR-ARQUIVOS.
+    97     OPEN INPUT ARQ-ENT0
+    98     IF FS-NAO-EXISTE THEN
+    99         DISPLAY 'UM ARQUIVO DE ENTRADA Nao FOI ENCONTRADO....'
+   100         CLOSE ARQ-ENT0
+   101         STOP RUN
+   102     END-IF.
+   103
+   104
+* Microsoft COBOL Version 5.0        L2.4 revision 003
+* (C)Copyright Microsoft Corp 1984, 1993       URN AXUPA/ZZ0/00001
+*                                              REF GNB-029052003A8
+*
+* Total Messages:     0
+* Data:         880     Code:         466
