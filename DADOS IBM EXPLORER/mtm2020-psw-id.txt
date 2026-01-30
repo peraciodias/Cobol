@@ -1,0 +1,16 @@
+Peracio Dias <peracio.dias@gmail.com>
+	
+20:25 (há 3 horas)
+	
+para PERACIO
+ID: Z13266
+Senha: stamp169
+
+        Se meu ID é Z99999
+        E eu acabei de terminar o desafio ABC1
+        Meu comando seria: s validate,score='chk z99999 abc1'
+
+ibm explore : id peracio.dias@gmail
+senha   =
+Cep18105-150
+

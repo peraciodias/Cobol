@@ -1,0 +1,167 @@
+introdução
+O DESAFIO
+Agora que você conhece alguns dos principais fundamentos do z / OS e
+você também explorou um pouco sobre scripts e Python, vamos trazê-lo
+tudo junto com algo chamado Z Open Automation Utilities,
+ou para economizar espaço a partir de agora, ZOAU.
+Vamos combinar as principais habilidades Z que aprendemos
+sobre conjuntos de dados e JCL com as habilidades de script encontradas em
+Python para automatizar algumas tarefas que um programador de sistema pode
+executar no dia-a-dia.
+
+Neste ponto, você sabe como
+trabalhar com conjuntos de dados, enviar
+empregos e navegue por aí
+USS. Você vai colocar tudo isso em uso
+aqui e embrulhe o seu
+compreensão fundamental de
+z / OS.
+--------------------------------------------------------------------------------------------------------------------------
+1. DECHO ... DECHO ..... DECHO
+Você precisará de um conjunto de dados sequenciais para este desafio. Se você não
+ainda tem seu conjunto de dados sequenciais JCL3OUT, faça um clicando com o botão direito
+no seu perfil de conexão em Conjuntos de dados e selecionando
+“Criar Novo Conjunto de Dados” e seguindo as instruções.
+Tudo pronto? Tudo bem, SSH no sistema novamente para obter um shell e
+em seguida, insira a versão correta deste comando, substituindo em
+seu próprio ID de usuário e o conjunto de dados que deseja usar.
+decho -a "Esta linha vai na parte inferior" 'Z99994.JCL3OUT'
+A execução completa pode demorar alguns segundos, portanto, seja paciente.
+--------------------------------------------------------------------------------------------------------------------------
+2
+Abra o conjunto de dados que você usou no comando no VS Code. Vocês
+pode ser necessário clicar com o botão direito nele e selecionar “Pull From Mainframe”
+se já estiver aberto para obter a versão mais recente absoluta.
+Você deve ver a linha que acabou de adicionar ao
+parte inferior do conjunto de dados. Um truque bacana, embora provavelmente não seja mais fácil
+do que apenas abri-lo e digitá-lo manualmente.
+O verdadeiro poder dessas ferramentas vem de ser capaz de
+integrar ações z / OS em programas Python novos e existentes
+e scripts de shell.
+------------------------------------------------------------------------------------------------------------------
+3 TUDO CONFIGURADO COM CONJUNTOS DE DAT
+Procure por dslist.py em / z / public / e copie-o para o seu
+diretório inicial. Você pode dar uma olhada rápida no código para descobrir
+para saber o que está fazendo.
+É um script Python (se você não adivinhou pelo sufixo .py) e você
+pode ver que obtém uma lista de tudo em um determinado conjunto de dados,
+então usa um loop for para imprimir cada nome de membro nele (em
+pelo menos, assim que você entrar e editar para apontar para um de seus dados
+conjuntos na linha número 9). Faça essa mudança agora. Experimente o seu JCL ou
+Conjunto de dados OUTPUT.
+Bom e simples, certo?
+--------------------------------------------------------------------------------------------------------------------------
+4 HÁ UM PITÃO NO MEU Z
+Escrever um script Python apenas para listar o que está em um conjunto de dados pode
+parece um exagero e, neste caso ... sim, é. No entanto, nós
+quero mostrar a você, em um programa bem simples, como pode ser
+feito. E agora que você vê isso, talvez você tenha algumas ideias.
+Agora que sabemos, podemos realizar tarefas essenciais do z / OS dentro
+Código Python. Este exemplo envolveu apenas conjuntos de dados. Você pode
+também funcionam com empregos, o próprio sistema e dois tipos de
+comandos. Dê uma olhada na página de APIs do Python e leia mais
+sobre esses módulos AQUIS
+--------------------------------------------------------------------------------------------------------------------------
+5. INSERINDO ALGUMA LÓGICA
+A seguir, trabalharemos com um script que faz um pouco mais, incluindo
+criar um novo conjunto de dados sequenciais, coletar alguns dados e
+em seguida, gravar esses dados em nossos dados sequenciais recém-criados
+definir.
+Vamos ajudá-lo a começar em algumas dessas funções, e seu
+trabalho será fazer com que o resto deles funcione sem problemas.
+Se ainda não estiver em seu diretório inicial, copie
+members.py de / z / public e dê uma olhada na fonte
+
+--------------------------------------------------------------------------------------------------------------------------
+6
+Neste ponto, você pode estar vendo muito código e recebendo
+nervoso. Este é o negócio ... mesmo se você não quiser ser um
+programador, você terá que passar algum tempo olhando para o código
+e fazer pequenos ajustes no código de outras pessoas. Isso é
+o próprio espírito de hackear.
+Grande parte da codificação envolve descobrir por onde começar, puxando
+juntos todos os recursos de que você precisa e criando algo
+do princípio. Hackear é pegar algo que faz alguma coisa
+e fazer pequenas alterações para adicionar um recurso, corrigir problemas ou
+apenas deixe sua própria marca nele.
+Sempre que há código envolvido, deixamos MUITOS comentários
+para ajudá-lo a descobrir o que está acontecendo e saber que pelo menos
+para este desafio, você nunca precisará escrever mais do que alguns
+linhas de novo código. Descobrir o fluxo e a estrutura do que é
+já provavelmente será a coisa mais difícil.
+Você conseguiu!
+--------------------------------------------------------------------------------------------------------------------------
+7 LOADING MODULES
+Veja a linha nº 3 de members.py. Estamos optando por importar três
+módulos da biblioteca zoautil.py; conjuntos de dados, trabalhos e
+zsystem. Cada um desses módulos fornece algum conjunto de funções
+que agora podemos usar em nosso código.
+Você pode ler tudo sobre os módulos e o que eles fazem aqui:
+https://www.ibm.com/docs/api/v1/content/SSKFYE_1.1.1/pyt
+hon_doc_zoautil / index.html? view
+--------------------------------------------------------------------------------------------------------------------------
+8. OBTER ESSE CONJUNTO DE DADOS
+As linhas 6-18 pedem ao usuário um nome de conjunto de dados sequenciais e
+atribui esse valor à variável dsname.
+Se o conjunto de dados já existe, vamos usá-lo e continuar. Se
+o conjunto de dados não existe, podemos criar isso para o usuário
+(o que faremos na próxima etapa).
+Se o conjunto de dados NÃO existe e o usuário não deseja
+criá-lo, então não há muito sentido em continuar o resto do
+o código, então usamos sys.exit para encerrar o programa.
+Até agora tudo bem? Tudo bem, vamos começar a hackear alguns códigos.
+--------------------------------------------------------------------------------------------------------------------------
+9
+Para este desafio, usaremos este script (members.py) para
+reúna dados e grave-os em um conjunto de dados sequencial.
+A linha # 17 está usando a função de criação do módulo de conjuntos de dados
+para tentar criar este conjunto de dados sequencial. Mas como está certo
+agora, não funcionará até que você faça um pequeno ajuste.
+Dê uma olhada na função datasets.create e descubra o que
+precisa substituir o ??? a fim de criar dados sequenciais
+definir.
+Use ZXXXXX.COMPLETE como o conjunto de dados sequencial quando
+solicitado pelo script. É para lá que estaremos olhando
+validar seu trabalho, além de cópia de members.py.
+(Lembre-se de usar seu ID de usuário em vez de ZXXXXX!).
+Dica: Um conjunto de dados sequencial é um tipo de conjunto de dados. Outros tipos de
+conjuntos de dados são KSDS, PDS, ESDS, mas, neste caso, o tipo de
+O conjunto de dados que queremos criar é um conjunto de dados sequencial.
+-------------------------------------------------- -------------------------------------------------- ----------------------
+10
+Lembre-se de como importamos alguns módulos no início
+deste script? Quando o sistema operacional z / OS é inicializado, ele meio que
+de faz a mesma coisa, carregando módulos e bibliotecas cheias de
+os tipos de recursos que o usuário pode precisar usar.
+A lista completa de bibliotecas carregadas é conhecida como lista de links e é
+o que permite que um usuário digite apenas um único comando em vez de
+tendo que referenciá-lo por seu caminho completo todas as vezes. Muito conveniente!
+De qualquer forma, saber como é a lista de links completa é
+importante, dentro do módulo zsystem de zoautil.py
+Observe as linhas 20-27. Como você pode ver, existem quatro linhas de código
+lá (e muitos comentários, caso você queira ler
+eles ... o que você provavelmente deveria).
+Sua tarefa é identificar e remover o comentário de uma linha de código
+(de 24-27) essa é a linha correta que irá capturar a lista de links
+representação e atribuí-lo à variável linklist_output.
+-------------------------------------------------- -------------------------------------------------- ----------------------
+11
+reuniu alguns dados. Vamos escrever esses dados no conjunto de dados
+no final do nosso script.
+Todas as informações estão lá, mas algo está errado e você
+precisa dar uma olhada no método datasets.write para descobrir
+o que é isso.
+Depois de ter tudo acertado e em ordem, dê um
+execução rápida e certifique-se de que o script funciona para você.
+--------------------------------------------------------------------------------------------------------------------------
+12
+Se você concluiu todas as etapas, deverá ter um
+Conjunto de dados sequenciais ZXXXXX.COMPLETE que contém uma leitura
+da lista de links do sistema. Consulte a imagem acima se você
+precisa de alguns esclarecimentos.
+Encontre e envie CHKAUTO para marcar este como concluído. Você pode
+faça isso do jeito que você tem feito até agora, ou ... eu aposto
+há uma função para enviar JCL que pode funcionar bem.
+De qualquer forma, parabéns por concluir os fundamentos
+desafios! Você está pronto para ir mais longe e mais longe.
+-----------------------------------------------------------------------------------------------------------------------

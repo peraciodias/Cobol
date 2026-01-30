@@ -1,0 +1,359 @@
+https://aprendacobol.com.br/reference/jcl-example-sample-reference-code.html
+
+
+//RACFID01 JOB 1,'APRENDA COBOL',CLASS=A,MSGCLASS=A,MSGLEVEL=(1,1),NOTIFY=&SYSUID
+//*******************************************************************************
+//** JCL TO CREATE A PS DATASET
+//*******************************************************************************
+//STEP001  EXEC PGM=IEFBR14
+//DD1      DD DSN=RACFID.IBMMF.PS1,
+//            DISP=(MOD,CATLG,DELETE),
+//            SPACE=(TRK,(10,100),RLSE),
+//            DCB=(LRECL=80,RECFM=FB,BLKSIZE=800,DSORG=PS)
+//*
+//DD2      DD DSN=RACFID.IBMMF.PS2,
+//            DISP=(MOD,CATLG,DELETE),
+//            SPACE=(TRK,(10,100),RLSE),
+//            DCB=(LRECL=80,RECFM=FB,BLKSIZE=800,DSORG=PS)
+//*
+2. JCL para excluir um(s) conjunto(s) de dados PS
+//RACFID02 JOB 2,'APRENDA COBOL',CLASS=A,MSGCLASS=A,MSGLEVEL=(1,1),NOTIFY=&SYSUID
+//*******************************************************************************
+//* JCL TO DELETE A PS DATASET
+//*******************************************************************************
+//STEP001  EXEC PGM=IEFBR14
+//DD1      DD DSN=RACFID.IBMMF.PS1,
+//         DISP=(OLD,DELETE,DELETE)
+//*
+//DD2      DD DSN=RACFID.IBMMF.PS2,
+//            DISP=(OLD,DELETE,DELETE)
+//*
+3. JCL para criar um(s) conjunto(s) de dados PDS
+//RACFID03 JOB 3,'APRENDA COBOL',CLASS=A,MSGCLASS=A,MSGLEVEL=(1,1),NOTIFY=&SYSUID
+//*******************************************************************************
+//* JCL TO CREATE A PDS DATASET
+//*******************************************************************************
+//STEP001  EXEC PGM=IEFBR14
+//DD1      DD DSN=RACFID.IBMMF.PDS1,
+//            DISP=(NEW,CATLG,DELETE),
+//            SPACE=(CYL,(10,100,4),RLSE),
+//            DCB=(LRECL=80,BLKSIZE=800,RECFM=FB,DSORG=PO)
+//*
+//STEP002  EXEC PGM=IEFBR14
+//DD2      DD DSN=RACFID.IBMMF.PDS2,
+//            DISP=(NEW,CATLG,DELETE),
+//            SPACE=(CYL,(10,100,4),RLSE),
+//            DCB=(LRECL=80,BLKSIZE=800,RECFM=FB,DSORG=PO)
+//*
+4. JCL para excluir um(s) conjunto(s) de dados PDS
+//RACFID04 JOB 4,'APRENDA COBOL',CLASS=A,MSGCLASS=A,MSGLEVEL=(1,1),NOTIFY=&SYSUID
+//*******************************************************************************
+//* JCL TO DELETE A PDS DATASET
+//*******************************************************************************
+//STEP001  EXEC PGM=IEFBR14
+//DD1      DD DSN=RACFID.IBMMF.PDS1,
+//            DISP=(OLD,DELETE,DELETE)
+//*
+//STEP002  EXEC PGM=IEFBR14
+//DD1      DD DSN=RACFID.IBMMF.PDS2,
+//            DISP=(OLD,DELETE,DELETE)
+//*
+5. JCL para criar um(s) membro(s) do conjunto de dados PDS
+  //RACFID05 JOB 5,'APRENDA COBOL',CLASS=A,MSGCLASS=A,MSGLEVEL=(1,1),NOTIFY=&SYSUID
+  //************************************************ ********************************
+  //* JCL PARA CRIAR UM MEMBRO DO CONJUNTO DE DADOS PDS
+  //************************************************ ********************************
+  //STEP001 EXEC PGM=IEBGENER
+  //SYSUT1DD*
+  //SYSUT2 DD DSN=RACFID.IBMMF.PDS(MEMBER1),
+  //DISP=SHR
+  //SYSIN DD DUMMY
+  //SYSPRINT DD SYSOUT=*
+  //*
+  //STEP002 EXEC PGM=IEBGENER
+  //SYSUT1DD*
+  //SYSUT2 DD DSN=RACFID.IBMMF.PDS(MEMBER1),
+  //DISP=SHR
+  //SYSIN DD DUMMY
+  //SYSPRINT DD SYSOUT=*
+  //*
+6. JCL para excluir um(s) membro(s) do conjunto de dados PDS
+  //RACFID06 JOB 6,'APRENDA COBOL',CLASS=A,MSGCLASS=A,MSGLEVEL=(1,1),NOTIFY=&SYSUID
+  //************************************************ ********************************
+  //* JCL PARA EXCLUIR UM MEMBRO DO CONJUNTO DE DADOS PDS
+  //************************************************ ********************************
+  //STEP001 EXEC PGM=IDCAMS
+  //DD1 DD DSN=RACFID.IBMMF.PDS,
+  //DISP=SHR
+  //SYSPRINT DD SYSOUT=*
+  //SYSIN DD *
+   EXCLUIR ARQUIVO 'RACFID.IBMMF.PDS(MEMBER1)'(DD1)
+  /*
+  //STEP002 EXEC PGM=IDCAMS
+  //DD1 DD DSN=RACFID.IBMMF.PDS,
+  //DISP=SHR
+  //SYSPRINT DD SYSOUT=*
+  //SYSIN DD *
+    EXCLUIR ARQUIVO 'RACFID.IBMMF.PDS(MEMBER2)' (DD1)
+  /*
+  
+  12. JCL para criar um VSAM - ESDS
+  // RACFID12 JOB 12,'APRENDA COBOL',CLASS=A,MSGCLASS=A,MSGLEVEL=(1,1),NOTIFY=&SYSUID
+  //************************************************ ************************************
+  //* JCL PARA CRIAR um VSAM - ESDS
+  //************************************************ ************************************
+  //STEP001 EXEC PGM=IDCAMS
+  //SYSPRINT DD SYSOUT=*
+  //SYSIN DD *
+    DEFINE CLUSTER (-
+            NAME(RACFID.IBMMF.ESDS) -
+            NONINDEXED -
+            RECSZ(200 200) -
+            FREESPACE(10 10) -
+            CISZ(8192) -
+            TRACKS(20 20) -
+            VOLUME(IBMSYS)
+  /*
+13. JCL para criar um VSAM - KSDS
+  // RACFID13 JOB 13,'APRENDA COBOL',CLASS=A,MSGCLASS=A,MSGLEVEL=(1,1),NOTIFY=&SYSUID
+  //************************************************ ************************************
+  //* JCL PARA CRIAR um VSAM - KSDS
+  //************************************************ ************************************
+  //STEP001 EXEC PGM=IDCAMS
+  //SYSPRINT DD SYSOUT=*
+  //SYSIN DD *
+    DEFINE CLUSTER (-
+           NAME(RACFID.IBMMF.KSDS) -
+           INDEXED -
+           KEYS(5 0) -
+           RECSZ(200 200) -
+           FREESPACE(10 20) -
+           TRACKS(50 30) -
+           CISZ(4096) -
+           VOLUME(IBMSYS))
+  /*
+14. JCL para criar um VSAM - RRDS
+  // RACFID14 JOB 14,'APRENDA COBOL',CLASS=A,MSGCLASS=A,MSGLEVEL=(1,1),NOTIFY=&SYSUID
+  //************************************************ ************************************
+  //* JCL PARA CRIAR um VSAM - RRDS
+  //************************************************ ************************************
+  //STEP001 EXEC PGM=IDCAMS
+  //SYSPRINT DD SYSOUT=*
+  //SYSIN DD *
+     DEFINE CLUSTER (-
+     NAME(RACFID.IBMMF.RRDS) -
+     NUMBERED -
+     RECSZ(200 200) -
+     CISZ(4096) -
+     TRACKS(20 20) -
+     FREESPACE(10 10) -
+     VOLUME(IBMSYS))
+  /*
+15. JCL para criar um VSAM - LDS
+  // RACFID15 JOB 15,'APRENDA COBOL',CLASS=A,MSGCLASS=A,MSGLEVEL=(1,1),NOTIFY=&SYSUID
+  //************************************************ ************************************
+  //* JCL PARA CRIAR um VSAM - LDS
+  //************************************************ ************************************
+  //STEP001 EXEC PGM=IDCAMS
+  //SYSPRINT DD SYSOUT=*
+  //SYSIN DD *
+    DEFINE CLUSTER (-
+    NAME(RACFID.IBMMF.LDS) -
+    LINEAR -
+    CISZ(4096) -
+    TRACKS(20 20) -
+    VOLUME(IBMSYS)
+  /*
+16. JCL para LISTCAT um VSAM
+  // RACFID16 JOB 16,'APRENDA COBOL',CLASS=A,MSGCLASS=A,MSGLEVEL=(1,1),NOTIFY=&SYSUID
+  //************************************************ ************************************
+  //* JCL PARA LISTCAT A VSAM
+  //************************************************ ************************************
+  //STEP001 EXEC PGM=IDCAMS
+  //SYSPRINT DD SYSOUT=*
+  //SYSIN DD *
+    LISTCAT ENTRY(RACFID.IBMMF.ESDS) -
+    ALL
+  /*
+17. JCL REPRO – Copiar de PS para ESDS
+  // RACFID17 JOB 17,'APRENDA COBOL',CLASS=A,MSGCLASS=A,MSGLEVEL=(1,1),NOTIFY=&SYSUID
+  //************************************************ ************************************
+  //* JCL REPRO – CÓPIA DE PS PARA ESDS
+  //************************************************ ************************************
+  //STEP001 EXEC PGM=IDCAMS
+  //SYSPRINT DD SYSOUT=*
+  //*
+  //PSFILE DD DSN=RACFID.IBMMF.PS,
+  //DISP=SHR
+  //ESDSFILE DD DSN=RACFID.IBMMF.ESDS,
+  //DISP=SHR
+  //SYSIN DD *
+     REPRO INFILE (PSFILE) -
+           OUTFILE(ESDSFILE)
+  /*
+18. JCL REPRO - Copiar de PS PARA KSDS
+  // RACFID18 JOB 18,'APRENDA COBOL',CLASS=A,MSGCLASS=A,MSGLEVEL=(1,1),NOTIFY=&SYSUID
+  //************************************************ ************************************
+  //* JCL REPRO - CÓPIA DE PS PARA KSDS
+  //************************************************ ************************************
+  //STEP001 EXEC PGM=IDCAMS
+  //SYSPRINT DD SYSOUT=*
+  //SYSOUT DD SYSOUT=*
+  //*
+  //PSFILE DD DSN=RACFID.IBMMF.PS,
+  //DISP=SHR
+  //KSDSFILE DD DSN=RACFID.IBMMF.KSDS,
+  //DISP=SHR
+  //SYSIN DD *
+    REPRO INFILE (PSFILE) -
+          OUTFILE(KSDSFILE)
+  /*
+19. JCL REPRO - Copiar de KSDS PARA PS
+  // RACFID19 JOB 19,'APRENDA COBOL',CLASS=A,MSGCLASS=A,MSGLEVEL=(1,1),NOTIFY=&SYSUID
+  //************************************************ ************************************
+  //* JCL REPRO - CÓPIA DE KSDS PARA PS
+  //************************************************ ************************************
+  //STEP001 EXEC PGM=IDCAMS
+  //SYSPRINT DD SYSOUT=*
+  //*
+  //KSFILE DD DSN=RACFID.IBMMF.KSDS,
+  //DISP=SHR
+  //PSFILE DD DSN=RACFID.IBMMF.PS,
+  //DISP=SHR
+  //*
+  //SYSIN DD *
+    REPRO INFILE(KSFILE) -
+          OUTFILE(PSFILE)
+  /*
+20. JCL REPRO - copie de PS para RRDS
+  //RACFID20 JOB 20,'APRENDA COBOL',CLASS=A,MSGCLASS=A,MSGLEVEL=(1,1),NOTIFY=&SYSUID
+  //************************************************ ************************************
+  //* JCL REPRO - CÓPIA DE PS PARA RRDS
+  //************************************************ ************************************
+  //STEP001 EXEC PGM=IDCAMS
+  //SYSPRINT DD SYSOUT=*
+  //*
+  //PSFILE DD DSN=RACFID.IBMMF.PS,
+  //DISP=SHR
+  //RRDSFILE DD DSN=RACFID.IBMMF.RRDS,
+  //DISP=SHR
+  //*
+  //SYSIN DD *
+    REPRO INFILE (PSFILE) -
+          OUTFILE(RRDSFILE)
+  /*
+
+21. JCL REPRO – cópia de ESDS para ESDS
+  //RACFID21 JOB 21,'APRENDA COBOL',CLASS=A,MSGCLASS=A,MSGLEVEL=(1,1),NOTIFY=&SYSUID
+  //************************************************ ************************************
+  //* JCL REPRO - CÓPIA DE ESDS PARA ESDS
+  //************************************************ ************************************
+  //STEP001 EXEC PGM=IDCAMS
+  //SYSPRINT DD SYSOUT=*
+  //*
+  //ESDS1 DD DSN=RACFID.IBMMF.ESDS1,
+  //DISP=SHR
+  //ESDS2 DD DSN=RACFID.IBMMF.ESDS2,
+  //DISP=SHR
+  //*
+  //SYSIN DD *
+    REPRO INFILE(ESDS1) -
+          OUTFILE(ESDS2)
+  /*
+22. JCL REPRO – cópia de RRDS para RRDS
+  // RACFID22 JOB 22,'APRENDA COBOL',CLASS=A,MSGCLASS=A,MSGLEVEL=(1,1),NOTIFY=&SYSUID
+  //************************************************ ************************************
+  //* JCL REPRO - CÓPIA DE RRDS PARA RRDS
+  //************************************************ ************************************
+  //STEP001 EXEC PGM=IDCAMS
+  //SYSPRINT DD SYSOUT=*
+  //*
+  //RRDS1 DD DSN=RECFID.IBMMF.RRDS1,
+  //DISP=SHR
+  //RRDS2 DD DSN=RECFID.IBMMF.RRDS2,
+  //DISP=SHR
+  //*
+  //SYSIN DD *
+     REPRO INFILE(RRDS1) -
+           OUTFILE(RRDS2)
+  /*
+23. JCL para copiar todos os membros de um PDS para outro PDS
+  //RACFID23 JOB 23,'APRENDA COBOL',CLASS=A,MSGCLASS=A,MSGLEVEL=(1,1),NOTIFY=&SYSUID
+  //************************************************ ************************************
+  //* JCL PARA COPIAR TODOS OS MEMBROS DE UM PDS PARA OUTRO PDS
+  //************************************************ ************************************
+  //STEP001 EXEC PGM=IEBCOPY
+  //DD1 DD DSN=RACFID.IBMMF.PDS1,DISP=SHR <--- INPUT DATASET
+  //DD2 DD DSN=RACFID.IBMMF.PDS2,DISP=SHR <--- CONJUNTO DE DADOS DE SAÍDA
+  //*
+  //SYSPRINT DD SYSOUT=*
+  //SYSOUT DD SYSOUT=*
+  //SYSIN DD *
+    COPY INDD=DD1
+        OUTDD=DD2
+  /*
+24. JCL para copiar todos os membros de um PDS para outro PDS usando SYSUT
+// RACFID24 JOB 24,'APRENDA COBOL',CLASS=A,MSGCLASS=A,MSGLEVEL=(1,1),NOTIFY=&SYSUID
+//************************************************ ************************************
+//* JCL PARA COPIAR TODOS OS MEMBROS DE UM PDS PARA OUTRO PDS USANDO O SYSUT
+//************************************************ ************************************
+//STEP001 EXEC PGM=IEBCOPY
+//SYSUT1 DD DSN=RACFID.IBMMF.PDS1,DISP=SHR <--- INPUT DATASET
+//SYSUT2 DD DSN=RACFID.IBMMF.PDS2,DISP=SHR <--- CONJUNTO DE DADOS DE SAÍDA
+//*
+//SYSPRINT DD SYSOUT=*
+//SYSOUT DD SYSOUT=*
+//SYSIN DD DUMMY
+25. JCL para copiar um membro específico de um PDS para outro PDS
+//RACFID25 JOB 25,'APRENDA COBOL',CLASS=A,MSGCLASS=A,MSGLEVEL=(1,1),NOTIFY=&SYSUID
+//************************************************ ************************************
+//* JCL PARA COPIAR MEMBRO ESPECÍFICO DE UM PDS PARA OUTRO PDS
+//************************************************ ************************************
+//STEP001 EXEC PGM=IEBCOPY
+//DD1 DD DSN=RACFID.IBMMF.PDS1,DISP=SHR <--- INPUT DATASET
+//DD2 DD DSN=RACFID.IBMMF.PDS2,DISP=SHR <--- CONJUNTO DE DADOS DE SAÍDA
+//*
+//SYSPRINT DD SYSOUT=*
+//SYSOUT DD SYSOUT=*
+//SYSIN DD *
+  COPY INDD=DD1
+      OUTDD=DD2
+      SELECT MEMBER=(MEMBER8,MEMBER3,MEMBER4)
+/*
+26. JCL para copiar dois membros PDS para um PDS
+// RACFID26 JOB 26,'APRENDA COBOL',CLASS=A,MSGCLASS=A,MSGLEVEL=(1,1),NOTIFY=&SYSUID
+//************************************************ ************************************
+//* JCL PARA COPIAR DOIS PDS MEMBRO PARA UM PDS
+//************************************************ ************************************
+//STEP001 EXEC PGM=IEBCOPY
+//DD1 DD DSN=RACFID.IBMMF.PDS1,DISP=SHR <--- INPUT DATASET
+//DD2 DD DSN=RACFID.IBMMF.PDS2,DISP=SHR <--- INPUT DATASET
+//DD3 DD DSN=RACFID.IBMMF.PDS3,DISP=SHR <--- CONJUNTO DE DADOS DE SAÍDA
+//*
+//SYSPRINT DD SYSOUT=*
+//SYSOUT DD SYSOUT=*
+//SYSIN DD *
+  COPY INDD=DD1
+       INDD=DD2
+      OUTDD=DD3
+/*
+27. JCL para copiar um membro específico de dois PDS para um PDS
+//RACFID27 JOB 27,'APRENDA COBOL',CLASS=A,MSGCLASS=A,MSGLEVEL=(1,1),NOTIFY=&SYSUID
+//**************************************************** ********************************
+//* JCL PARA COPIAR MEMBRO ESPECÍFICO DE DOIS PDS PARA UM PDS
+//**************************************************** ********************************
+//STEP001 EXEC PGM=IEBCOPY
+//DD1 DD DSN=RACFID.IBMMF.PDS1,DISP=SHR <--- INPUT DATASET
+//DD2 DD DSN=RACFID.IBMMF.PDS2,DISP=SHR <--- INPUT DATASET
+//DD3 DD DSN=RACFID.IBMMF.PDS3,DISP=SHR <--- CONJUNTO DE DADOS DE SAÍDA
+//*
+//SYSPRINT DD SYSOUT=*
+//SYSOUT DD SYSOUT=*
+//SYSIN DD *
+  COPY INDD=DD1
+       INDD=DD2
+      OUTDD=DD3
+      SELECT MEMBER=(MEMBER1,MEMBER5,MEMBER9)
+/*
+28. JCL para renomear membro ao copiar PDS para PDS
+  

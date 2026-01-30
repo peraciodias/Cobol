@@ -1,0 +1,64 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. CRIALUNO.
+       ENVIRONMENT DIVISION.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT FILE-NOME       ASSIGN TO RECIN1
+                         ORGANIZATION IS SEQUENTIAL.
+           SELECT FILE-SNOME      ASSIGN TO RECIN2
+                         ORGANIZATION IS SEQUENTIAL.
+           SELECT FILE-OUT        ASSIGN TO RECOUT
+                         ORGANIZATION IS SEQUENTIAL.
+       DATA DIVISION.
+       FILE SECTION.
+       FD FILE-SNOME RECORD CONTAINS 80 CHARACTERS RECORDING MODE F.
+       01 FIELD-SNOME         PIC X(50).
+       FD FILE-NOME RECORD CONTAINS 80 CHARACTERS RECORDING MODE F.
+       01 FIELD-NOME          PIC X(22).
+       FD FILE-OUT RECORD CONTAINS 80 CHARACTERS RECORDING MODE F.
+       01 REG-SAI.
+           05 REC-OUT-RG      PIC 9(08).
+           05 REC-OUT-NOME    PIC X(22).
+           05 REC-OUT-SNOME   PIC X(50).
+
+       WORKING-STORAGE SECTION.
+       01  WS-FIELD-NOME      PIC X(22).
+       01  WS-FIELD-SNOME     PIC X(50).
+       01  WS-CONTA-REG       PIC 9(08).
+       01 FLAGS.
+         05 LASTREC           PIC X VALUE SPACE.
+             88 LAST-REC            VALUE "N".
+       PROCEDURE DIVISION.
+           MOVE 20200000 TO WS-CONTA-REG.
+           PERFORM OPEN-FILES.
+       READ-NEXT-RECORD.
+           PERFORM UNTIL LAST-REC
+           PERFORM READ-REC-NOME
+           PERFORM READ-REC-SNOME
+           PERFORM STOP-AT-LAST-RECORD
+           MOVE WS-FIELD-SNOME TO REC-OUT-SNOME
+           MOVE WS-FIELD-NOME TO REC-OUT-NOME
+           ADD 1 TO WS-CONTA-REG
+           MOVE WS-CONTA-REG TO REC-OUT-RG
+           WRITE REG-SAI
+           END-PERFORM.
+       STOP-AT-LAST-RECORD.
+           IF LAST-REC THEN
+              CLOSE FILE-NOME
+              CLOSE FILE-OUT
+              CLOSE FILE-SNOME
+              STOP RUN.
+      *---------------------------------*
+       READ-REC-SNOME.
+           READ FILE-SNOME INTO WS-FIELD-SNOME
+               AT END SET LAST-REC TO TRUE
+               END-READ.
+       READ-REC-NOME.
+           READ FILE-NOME INTO WS-FIELD-NOME
+               AT END SET LAST-REC TO TRUE
+               MOVE WS-FIELD-NOME TO REC-OUT-NOME
+               END-READ.
+       OPEN-FILES.
+           OPEN OUTPUT FILE-OUT
+           OPEN INPUT  FILE-NOME
+           OPEN INPUT  FILE-SNOME.

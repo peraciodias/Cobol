@@ -1,0 +1,127 @@
+O DESAFIO
+Agora, você sabe como funciona a mecânica profunda do z / OS.
+Você sabe como alocar um conjunto de dados do Zowe, de seu
+terminal, através do VS Code, através do ZOAU ... você está no ponto
+onde você apenas deseja que as coisas aconteçam tão rápida e suavemente quanto
+possível, e estamos prestes a brincar no Docker, um código aberto
+plataforma para criar, implantar e gerenciar virtualizado
+recipientes de aplicativos.
+Você precisará de algumas ferramentas essenciais em
+lugar - Docker e um par de VS
+Extensões de código. Isso vai exigir
+alguma configuração de software em seu
+estação de trabalho e no código VS - todos
+Vale a pena!
+
+1. INSTALAR O DOCKER NO CÓDIGO VS
+Acesse Extensões e adquira o Docker. Há muitos
+Fichas relacionadas ao docker, mas vamos começar com
+simplesmente o velho "Docker". Isso insuflou ao VS Code a capacidade de
+trabalhar com imagens e contêineres do Docker. A instalação deve ser
+bem rápido, mas você não terminou ainda.
+Vá para o novo ícone do Docker que foi criado no lado esquerdo
+e você notará que todas as caixas têm um pouco de amarelo
+triângulos de "aviso" neles, porque o Docker Desktop não é
+instalado ainda. Vamos consertar isso na próxima etapa.
+
+2. INSTALE O DOCKER DESKTOP
+
+3. SIGA AS INSTRUÇÕES
+9 passos 1 hora
+DOCK1
+Insira a captura de tela aqui Insira a captura de tela aqui
+Se esta mensagem aparecer, clique em Instalar. Se você perdeu, ou ainda
+tem um aviso de que o Docker Desktop não está instalado / em execução, então
+vá para o Docker Desktop e inicie o download. Isto é o
+instalação mais complicada e pode levar até 30 minutos
+Faça a conexão da velocidade do seu computador e da conexão com a Internet.
+
+3 SIGA AS PROMPTS
+Você vai ter que usar seu bom senso aqui para um
+enquanto. A instalação deve ser bastante direta. Sobre
+Windows, você executará um instalador e reinicializará. No Mac, você arrastará
+Docker em aplicativos. Pode ser necessária uma reinicialização. Depois de
+a instalação para concluída, inicie o Docker Desktop e siga as instruções.
+
+4. FAÇA O TOUR (OPCIONAL)
+Quer brincar com um pool de amostra e experimentar alguns
+comandos antes de começarmos? Há uma demonstração integrada que
+pode ajudá-lo a obter alguns dos conceitos do Docker.
+Já terminou ou está se sentindo bem no Docker?
+Em seguida, vá para a próxima etapa, mas definir-se de manter
+Docker Desktop em execução. Verificaremos isso na Etapa 5.
+
+5. CARREGUE UMA IMAGEM
+Ao reiniciar o VS Code, clique no ícone do Docker no
+lado esquerdo (é aquela baleia icônica com os recipientes nas costas).
+Você não deve ver triângulos de aviso, mas sim algo
+semelhante à imagem acima.
+Vá para o seu Terminal e digite este comando para executar um docker
+imagem como um contêiner e nos oferecem um shell interativo dentro dela.
+docker run -it ubuntu bash
+
+6. CORRENDO, ASSIM ASSIM
+Como ainda não temos essa imagem, ela precisa
+baixe todas as peças. Quando terminar, você notará que nós
+agora tem:
+1) Um contêiner
+2) Uma imagem
+3) O prompt do terminal é uma janela para o contêiner do docker
+Isso tudo é ... um pouco alucinante no início. Está agindo como um virtual
+máquina em execução no seu computador, mas na verdade são apenas peças
+você executa o Ansible.
+Vamos ajudar a tornar isso um pouco mais claro instalando mais um
+extensão, pegue isso na próxima etapa.
+
+7. INSTALAR REMOTO - RECIPIENTES
+Vá para a tela Extensões (o ícone de 4 caixas) para pesquisar e
+instalar Remoto - Contêineres. Isso nos permitirá lançar um inteiramente
+janela VS Code separada para cada contêiner em que estamos trabalhando.
+Você pode pular isso se tiver um método de sua preferência, mas nós estaremos
+mostrando etapas usando a extensão, para ilustrar melhor o
+ambientes diferentes.
+Uma vez feito isso, reinicie o VS Code (apenas para recuperar tudo)
+e vá para a Etapa 8.
+
+8. LANÇAR O EXPLORER REMOTO
+Uma vez de volta, encontre o novo ícone no lado esquerdo para Remote
+Explorer e encontre seu contêiner do Ubuntu nele, que acabamos de
+puxado para baixo. (Você também pode precisar refazer o comando de
+Etapa 5 se você reiniciou o VS Code)
+Clique com o botão direito sobre ele e selecione "Anexar ao recipiente". Isso vai
+lançar uma nova janela do VS Code, que lhe dá uma visão do
+o que está acontecendo nesta imagem de contêiner. Isto é o
+visualização do contêiner, não o sistema de arquivos normal do seu computador. Perceber
+a caixa verde na parte inferior da janela mostrando o que
+a visualização é, e também observe que o ícone do Zowe está ausente.
+
+9. ABRIR A RAIZ
+
+Clique no botão Explorer, clique em "Abrir ..." e digite
+"/ root /" como a pasta que você deseja abrir. Você deveria acabar
+com uma lista de arquivos como a da imagem acima.
+Agora você está pronto para lidar com todos os tipos de contêineres
+atividades - você pode usar esta configuração para obter experiência prática
+com Ansible.
+Você pode marcar seu desafio como concluído, enviando o
+Tarefa CHKADOCK em ZXP.PUBLIC.JCL
+
+POR QUE TODO O PREP FUNCIONA?
+Fazer um programa funcionar uma vez é bom. Fazê-lo funcionar centenas, senão milhares de vezes depois
+isso, exatamente da mesma forma, requer uma orquestração cuidadosa. No passado, isso significava que uma pessoa, ou um
+equipe de pessoas teve que configurar um monte de sistemas e configurá-los cuidadosamente para que
+um programa pode ser executado neles. Eles iriam gerenciar todas as etapas do processo e dobrar o
+a quantidade de programas em execução significava que todos tinham que trabalhar duas vezes mais. Essa é a maneira antiga.
+Contêineres do Docker e orquestração que acontece em soluções como Ansible e Kubernetes significa
+que aumentar a capacidade não significa adicionar complexidade a cada etapa. É um importante
+revolução na TI corporativa que não apenas produz soluções mais capazes, mas também libera a equipe para trabalhar
+em outras tarefas, como inventar a próxima grande coisa, em vez de configurar outro sistema.
+
+PRÓXIMO…
+Nós configuramos tudo, podemos como
+bem usá-lo. The Ansible
+módulos dependem do uso de
+contêineres docker para construir e
+execute “playbooks” - você
+deve estar tudo pronto para enfrentar
+estes agora.

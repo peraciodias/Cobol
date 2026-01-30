@@ -1,0 +1,26 @@
+    Users can call _unzip for a ZOAUResponse
+
+zoautil_py.datasets.write(dataset, content, append=False, *args, **kwargs)
+
+    Write content to a z/OS dataset.
+
+    Returns
+
+        int
+    Return type
+
+        RC from z/OS
+    Parameters
+
+            dataset (str) – Dataset to write content to
+
+            content (str) – String to write to the dataset
+
+            append (bool) – Append-mode will add the content to the end of the dataset
+
+    Notes
+
+    Users can call _write for a raw function that returns ZOAUResponse
+
+zoautil_py.datasets.zip(file, target, *args, **kwargs)
+

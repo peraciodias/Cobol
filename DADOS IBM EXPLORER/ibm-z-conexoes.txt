@@ -1,0 +1,26 @@
+ibm challenge 
+
+Z ID: Z04006
+senha inicial parte 1-Z Password: disco152
+  == > nova senha parte 2 =>  shake90
+
+LOGIN PELO SSH  ==> ssh z04006@204.90.115.200
+em seguia a senha disco152
+
+login na página
+ibm explore : id peracio.dias@gmail
+senha   = Cep18105-150
+=========================================================
+OUTRO IBM ID
+Peracio Dias <peracio.dias@gmail.com>
+https://192.86.32.153:10443		
+ID: Z13266
+Senha: stamp169
+
+        Se meu ID é Z13266
+        E eu acabei de terminar o desafio ABC1
+        Meu comando seria: s validate,score='chk z99999 abc1'
+----------------------------------------------------------
+
+ZOWE TSO    --   LOGIN
+PASS   =  Z04006-102-aabaaaaw
